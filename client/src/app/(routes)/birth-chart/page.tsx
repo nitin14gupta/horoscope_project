@@ -2,7 +2,39 @@
 
 import { useState } from 'react';
 
-const planets = [
+interface Planet {
+  name: string;
+  symbol: string;
+  element: string;
+  house: string | number;
+  sign: string;
+}
+
+interface House {
+  number: number;
+  name: string;
+  area: string;
+}
+
+interface PlanetaryPosition extends Planet {
+  degree: number;
+  house: number;
+  status: 'Strong' | 'Weak';
+}
+
+interface HousePosition extends House {
+  sign: string;
+}
+
+interface ChartData {
+  ascendant: string;
+  sunSign: string;
+  moonSign: string;
+  planetaryPositions: PlanetaryPosition[];
+  housePositions: HousePosition[];
+}
+
+const planets: Planet[] = [
   { name: "Sun", symbol: "☀️", element: "Fire", house: "5th", sign: "Leo" },
   { name: "Moon", symbol: "🌙", element: "Water", house: "4th", sign: "Cancer" },
   { name: "Mercury", symbol: "☿", element: "Earth", house: "3rd", sign: "Gemini" },
@@ -14,7 +46,7 @@ const planets = [
   { name: "Ketu", symbol: "☋", element: "Shadow", house: "12th", sign: "Scorpio" }
 ];
 
-const houses = [
+const houses: House[] = [
   { number: 1, name: "Ascendant", area: "Self, personality, appearance" },
   { number: 2, name: "Wealth", area: "Finances, family, speech" },
   { number: 3, name: "Siblings", area: "Communication, courage, short journeys" },
@@ -39,7 +71,7 @@ export default function BirthChartPage() {
     longitude: ''
   });
   const [isCalculating, setIsCalculating] = useState(false);
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -53,7 +85,7 @@ export default function BirthChartPage() {
     
     // Simulate calculation
     setTimeout(() => {
-      const mockChart = {
+      const mockChart: ChartData = {
         ascendant: "Libra",
         sunSign: "Aries",
         moonSign: "Cancer",
@@ -92,7 +124,7 @@ export default function BirthChartPage() {
           <div className="max-w-2xl mx-auto">
             <div className="bg-hover rounded-2xl p-8">
               <h2 className="text-2xl font-semibold mb-6 mystical-glow">Enter Your Birth Details</h2>
-              
+               
               <div className="grid md:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-secondary font-semibold mb-2">Full Name</label>
@@ -189,7 +221,7 @@ export default function BirthChartPage() {
             <div className="bg-hover rounded-xl p-6">
               <h3 className="text-xl font-semibold mb-4 mystical-glow">Planetary Positions</h3>
               <div className="grid md:grid-cols-3 gap-4">
-                {chartData.planetaryPositions.map((planet: any, index: number) => (
+                {chartData.planetaryPositions.map((planet, index) => (
                   <div key={index} className="bg-charcoal rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
@@ -214,7 +246,7 @@ export default function BirthChartPage() {
             <div className="bg-hover rounded-xl p-6">
               <h3 className="text-xl font-semibold mb-4 mystical-glow">House Analysis</h3>
               <div className="grid md:grid-cols-2 gap-4">
-                {chartData.housePositions.map((house: any, index: number) => (
+                {chartData.housePositions.map((house, index) => (
                   <div key={index} className="bg-charcoal rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-semibold">{house.number}. {house.name}</span>
