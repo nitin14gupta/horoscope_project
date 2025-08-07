@@ -2,7 +2,18 @@
 
 import { useState } from 'react';
 
-const tarotCards = [
+interface TarotCard {
+  name: string;
+  meaning: string;
+  reversed: string;
+  image: string;
+}
+
+interface DrawnCard extends TarotCard {
+  isReversed: boolean;
+}
+
+const tarotCards: TarotCard[] = [
   {
     name: "The Fool",
     meaning: "New beginnings, innocence, spontaneity",
@@ -66,7 +77,7 @@ const tarotCards = [
 ];
 
 export default function TarotPage() {
-  const [selectedCards, setSelectedCards] = useState<any[]>([]);
+  const [selectedCards, setSelectedCards] = useState<DrawnCard[]>([]);
   const [isReading, setIsReading] = useState(false);
   const [readingComplete, setReadingComplete] = useState(false);
 
@@ -78,7 +89,7 @@ export default function TarotPage() {
     // Simulate card drawing
     setTimeout(() => {
       const shuffled = [...tarotCards].sort(() => Math.random() - 0.5);
-      const drawn = shuffled.slice(0, 3).map(card => ({
+      const drawn: DrawnCard[] = shuffled.slice(0, 3).map(card => ({
         ...card,
         isReversed: Math.random() > 0.5
       }));
@@ -162,7 +173,7 @@ export default function TarotPage() {
                     <span className="text-secondary font-semibold">Past Influence:</span> {selectedCards[0]?.name} represents the energy that brought you here.
                   </p>
                   <p>
-                    <span className="text-secondary font-semibold">Present Situation:</span> {selectedCards[1]?.name} shows what you're currently experiencing.
+                    <span className="text-secondary font-semibold">Present Situation:</span> {selectedCards[1]?.name} shows what you&apos;re currently experiencing.
                   </p>
                   <p>
                     <span className="text-secondary font-semibold">Future Guidance:</span> {selectedCards[2]?.name} offers insight into your path forward.
