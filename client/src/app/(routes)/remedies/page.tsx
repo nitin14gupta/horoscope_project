@@ -201,7 +201,7 @@ export default function RemediesPage() {
             💎 Gemstones & Remedies
           </h1>
           <p className="text-textSoft text-center mt-4 text-lg">
-            Astrological solutions for life's challenges
+            Astrological solutions for life&apos;s challenges
           </p>
         </div>
       </div>

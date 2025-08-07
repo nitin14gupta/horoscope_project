@@ -33,8 +33,8 @@ export default function AboutPage() {
             </div>
             <p className="text-textSoft text-lg leading-relaxed mb-6">
               At HoroScope, we believe that the ancient wisdom of Vedic astrology holds the key to 
-              understanding our life's journey. Our mission is to make this profound knowledge 
-              accessible to everyone, helping you navigate life's challenges and opportunities with 
+              understanding our life&apos;s journey. Our mission is to make this profound knowledge 
+              accessible to everyone, helping you navigate life&apos;s challenges and opportunities with 
               cosmic guidance.
             </p>
             <p className="text-textSoft text-lg leading-relaxed">
@@ -143,12 +143,9 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-heading font-bold mb-2 text-primary">
                   Nitin Gupta
                 </h3>
-                <p className="text-secondary mb-4">Founder & Lead Astrologer</p>
+                <p className="text-secondary mb-4">Founder</p>
                 <p className="text-textSoft leading-relaxed">
-                  With over 15 years of experience in Vedic astrology, Nitin has dedicated his life 
-                  to studying ancient texts and helping people understand their cosmic journey. 
-                  His deep knowledge of Hindu Panchang and traditional practices forms the foundation 
-                  of our platform.
+                  A software developer with a passion for astrology and a desire to make it accessible to everyone.
                 </p>
               </div>
             </div>

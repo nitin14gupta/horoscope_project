@@ -297,7 +297,7 @@ export default function LearnPage() {
               href="/panchang"
               className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg inline-block"
             >
-              🗓️ Today's Panchang
+              🗓️ Today&apos;s Panchang
             </Link>
           </div>
         </div>
