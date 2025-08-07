@@ -49,7 +49,7 @@ export default function Home() {
               🔭 Get My Horoscope
             </Link>
             <Link
-              href="/about"
+              href="/learn"
               className="bg-secondary hover:bg-secondary/80 text-charcoal font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg"
             >
               📖 Learn Astrology
@@ -143,12 +143,16 @@ export default function Home() {
             Connect & Explore 🧘
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {[
               { href: '/horoscope', text: 'Get My Horoscope', icon: '🔭' },
               { href: '/zodiac', text: 'Know My Zodiac', icon: '♈' },
               { href: '/panchang', text: "Today's Panchang", icon: '🗓️' },
-              { href: '/matchmaking', text: 'Kundali Match', icon: '💑' }
+              { href: '/matchmaking', text: 'Kundali Match', icon: '💑' },
+              { href: '/mantras', text: 'Daily Mantras', icon: '🕉️' },
+              { href: '/remedies', text: 'Gemstones & Remedies', icon: '💎' },
+              { href: '/learn', text: 'Learn Astrology', icon: '📖' },
+              { href: '/about', text: 'About Us', icon: '🕉️' }
             ].map((link, index) => (
               <Link
                 key={index}
