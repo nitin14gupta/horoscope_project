@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Horoscope Result</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>🔮 Horoscope for {{ sign }} ({{ day }})</h1>
+    <ul>
+        <li><strong>Date Range:</strong> {{ date_range }}</li>
+        <li><strong>Description:</strong> {{ description }}</li>
+        <li><strong>Compatibility:</strong> {{ compatibility }}</li>
+        <li><strong>Mood:</strong> {{ mood }}</li>
+        <li><strong>Color:</strong> {{ color }}</li>
+        <li><strong>Lucky Number:</strong> {{ lucky_number }}</li>
+        <li><strong>Lucky Time:</strong> {{ lucky_time }}</li>
+    </ul>
+    <a href="/">🔙 Back</a>
+</body>
+</html>

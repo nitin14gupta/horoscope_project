@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand palette */
+  --background: #0a0a0a; /* deep charcoal */
+  --foreground: #ffffff; /* primary text */
+
+  --color-primary: #FF5FA2; /* neon pink */
+  --color-secondary: #F2E8F5; /* pastel lilac */
+  --color-tertiary: #58FFE3; /* neon mint */
+  --color-muted: #AAAAAA; /* subtle grey */
+}
+
+@media (min-width: 1024px) {
+  body {
+    cursor: none;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
+  @apply antialiased;
+}
+
+/* Ensure Vanta background is always visible on home section */
+#home {
+  background: transparent !important;
+}
+
+/* --------------------------------------------------
+   Neon helper utilities
+-------------------------------------------------- */
+
+.neon {
+  text-shadow: 0 0 4px var(--color-primary), 0 0 8px var(--color-primary),
+    0 0 16px var(--color-primary);
+  animation: neon-flicker 3s linear infinite;
+}
+
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 40px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-blob {
+  animation: blob 14s ease-in-out infinite;
+}
+
+/* Hero interactive gradient */
+.hero-glow {
+  background: radial-gradient(500px at var(--hx,50%) var(--hy,50%), rgba(255,95,162,0.12), transparent 70%);
+  mix-blend-mode: screen;
+  transition: background 0.2s ease;
+}
+
+/* Heart burst keyframes (used after waitlist submission) */
+@keyframes heart-burst {
+  0% { transform: scale(0.5); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 0.4; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.heart-burst {
+  animation: heart-burst 0.8s ease-out forwards;
+}
+
+/* --------------------------------------------------
+   Custom Scrollbar
+-------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-tertiary);
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--background);
+}
+
+/* --------------------------------------------------
+   Honey drip gradient helper
+-------------------------------------------------- */
+.drip-gradient {
+  /* Multi-stop gradient for deeper, more realistic honey shading */
+  background: linear-gradient(to bottom, #FFF8D8 0%, #FFE8A2 40%, #FFD37D 70%, #F6BA54 100%);
+  position: absolute;
+  pointer-events: none;
+  /* Soft diffused shadow for volume */
+  filter: drop-shadow(0 6px 8px rgba(246, 186, 84, 0.35));
+}
+
+.drip-gradient::after {
+  content: "";
+  position: absolute;
+  top: 4%;
+  left: 12%;
+  width: 76%;
+  height: 28%;
+  background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.05) 80%);
+  border-radius: inherit;
+  filter: blur(4px) brightness(1.2);
+  pointer-events: none;
+}
+
+/* Custom utility: will-change-transform */
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Custom utility: text-stroke-white */
+.text-stroke-white {
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: #ffffff;
+}
+
+/* Custom utility: footer-radial-bg */
+.footer-radial-bg {
+  background: radial-gradient(400px at var(--x) var(--y), rgba(255,95,162,0.15), transparent 70%);
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
