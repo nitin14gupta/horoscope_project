@@ -13,16 +13,16 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
         /**
-         * JILZO brand palette – Neon Cyber-Club Pastel
+         * Horoscope Mystical Theme – Dark Purple & Gold
          */
-        primary: "#FF5FA2", // neon pink
-        secondary: "#F2E8F5", // pastel lilac
-        tertiary: "#58FFE3", // neon mint/cyan
-        honeyLight: "#FFF8D8", // lighter honey top
-        honeyMid: "#FFE8A2",
-        honeyDeep: "#F6BA54",
-        charcoal: "#0A0A0A", // deep charcoal
-        muted: "#AAAAAA", // subtle sub-text grey
+        primary: "#BB86FC", // mystical purple
+        secondary: "#FFD700", // golden accent
+        tertiary: "#FF5252", // error/warning red
+        charcoal: "#0D0D0D", // pure dark background
+        muted: "#CCCCCC", // soft gray text
+        hover: "#1F1F1F", // button hover state
+        textMain: "#FFFFFF", // main text
+        textSoft: "#CCCCCC", // soft text
       },
 
       /**
@@ -34,10 +34,20 @@ export default {
       },
 
       /**
-       * Utility shadows for neon glow effects
+       * Utility shadows for mystical glow effects
        */
       dropShadow: {
-        neon: "0 0 8px #FF5FA2, 0 0 16px #FF5FA2",
+        mystical: "0 0 8px #BB86FC, 0 0 16px #BB86FC",
+        golden: "0 0 8px #FFD700, 0 0 16px #FFD700",
+      },
+
+      /**
+       * Custom gradients for mystical backgrounds
+       */
+      backgroundImage: {
+        'mystical-gradient': 'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
+        'purple-glow': 'radial-gradient(circle at 50% 50%, rgba(187, 134, 252, 0.15), transparent 70%)',
+        'golden-glow': 'radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.15), transparent 70%)',
       },
     },
   },
