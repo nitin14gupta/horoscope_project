@@ -143,7 +143,7 @@ export default function Home() {
             Connect & Explore 🧘
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {[
               { href: '/horoscope', text: 'Get My Horoscope', icon: '🔭' },
               { href: '/zodiac', text: 'Know My Zodiac', icon: '♈' },
@@ -152,7 +152,10 @@ export default function Home() {
               { href: '/mantras', text: 'Daily Mantras', icon: '🕉️' },
               { href: '/remedies', text: 'Gemstones & Remedies', icon: '💎' },
               { href: '/learn', text: 'Learn Astrology', icon: '📖' },
-              { href: '/about', text: 'About Us', icon: '🕉️' }
+              { href: '/about', text: 'About Us', icon: '🕉️' },
+              { href: '/tarot', text: 'Tarot Reading', icon: '🎴' },
+              { href: '/birth-chart', text: 'Birth Chart', icon: '🌟' },
+              { href: '/calendar', text: 'Astrology Calendar', icon: '📅' }
             ].map((link, index) => (
               <Link
                 key={index}
