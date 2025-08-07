@@ -92,7 +92,7 @@ export default function MatchmakingPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div>
                   <label className="block text-textSoft mb-4 text-lg font-semibold">
-                    First Person's Zodiac Sign
+                    First Person&apos;s Zodiac Sign
                   </label>
                   <select
                     value={sign1}
@@ -110,7 +110,7 @@ export default function MatchmakingPage() {
 
                 <div>
                   <label className="block text-textSoft mb-4 text-lg font-semibold">
-                    Second Person's Zodiac Sign
+                    Second Person&apos;s Zodiac Sign
                   </label>
                   <select
                     value={sign2}

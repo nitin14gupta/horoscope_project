@@ -126,7 +126,7 @@ export default function Home() {
             <p className="text-lg text-textSoft leading-relaxed mb-8">
               Our platform is powered by ancient Vedic astrology principles derived from Hindu Panchang. 
               Based on your date, time, and place of birth, we generate detailed zodiac-based predictions 
-              that help you navigate life's journey with cosmic wisdom.
+              that help you navigate life&apos;s journey with cosmic wisdom.
             </p>
             <p className="text-lg text-textSoft leading-relaxed">
               The stars have guided humanity for millennia. Now, let them guide you through the 

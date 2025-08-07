@@ -40,7 +40,7 @@ export default function PanchangPage() {
             ← Back to Home
           </Link>
           <h1 className="text-4xl md:text-6xl font-heading font-bold text-center mt-8 mystical-glow">
-            🗓️ Today's Panchang
+            🗓️ Today&apos;s Panchang
           </h1>
           <p className="text-textSoft text-center mt-4 text-lg">
             Hindu Calendar & Auspicious Timings
@@ -143,10 +143,10 @@ export default function PanchangPage() {
             </h3>
             <div className="text-center">
               <p className="text-textSoft text-lg leading-relaxed mb-6">
-                "Today is blessed with the energy of {panchangData.nakshatra} nakshatra. 
+                &quot;Today is blessed with the energy of {panchangData.nakshatra} nakshatra. 
                 This is an excellent time for spiritual practices, meditation, and connecting 
                 with your inner self. The {panchangData.yoga} yoga brings positive energy 
-                for new beginnings and personal growth."
+                for new beginnings and personal growth.&quot;
               </p>
               <div className="text-4xl mb-4">🕉️</div>
               <p className="text-textSoft">
