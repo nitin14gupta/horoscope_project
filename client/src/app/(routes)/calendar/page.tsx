@@ -85,9 +85,6 @@ const zodiacMonths = [
 ];
 
 export default function CalendarPage() {
-  const [selectedMonth] = useState(currentMonth);
-  const [selectedYear] = useState(currentYear);
-
   const getMonthName = (month: number) => {
     const months = [
       "January", "February", "March", "April", "May", "June",
@@ -154,7 +151,7 @@ export default function CalendarPage() {
         <div className="max-w-4xl mx-auto mb-12">
           <div className="bg-hover rounded-xl p-6">
             <h2 className="text-2xl font-semibold mb-6 mystical-glow">
-              🌙 {getMonthName(selectedMonth)} {selectedYear} Cosmic Events
+              🌙 {getMonthName(currentMonth)} {currentYear} Cosmic Events
             </h2>
             <div className="space-y-4">
               {monthlyEvents.map((event, index) => (
