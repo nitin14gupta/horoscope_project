@@ -85,8 +85,8 @@ const zodiacMonths = [
 ];
 
 export default function CalendarPage() {
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth] = useState(currentMonth);
+  const [selectedYear] = useState(currentYear);
 
   const getMonthName = (month: number) => {
     const months = [

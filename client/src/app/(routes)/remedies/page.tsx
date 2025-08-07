@@ -3,7 +3,43 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-const remedies = [
+// Type definitions for remedies data
+interface PlanetaryGemstone {
+  name: string;
+  planet: string;
+  color: string;
+  finger: string;
+  day: string;
+  benefits: string;
+  price: string;
+  alternatives: string;
+  mantra: string;
+}
+
+interface ZodiacRemedy {
+  name: string;
+  planet: string;
+  gemstone: string;
+  color: string;
+  deity: string;
+  day: string;
+  remedies: string[];
+}
+
+interface GeneralRemedy {
+  name: string;
+  solutions: string[];
+}
+
+type RemedyItem = PlanetaryGemstone | ZodiacRemedy | GeneralRemedy;
+
+interface RemedyCategory {
+  category: string;
+  icon: string;
+  items: RemedyItem[];
+}
+
+const remedies: RemedyCategory[] = [
   {
     category: 'Planetary Gemstones',
     icon: '💎',
@@ -186,6 +222,19 @@ const remedies = [
   }
 ];
 
+// Type guards to check item types
+const isPlanetaryGemstone = (item: RemedyItem): item is PlanetaryGemstone => {
+  return 'planet' in item && 'benefits' in item && 'mantra' in item;
+};
+
+const isZodiacRemedy = (item: RemedyItem): item is ZodiacRemedy => {
+  return 'planet' in item && 'gemstone' in item && 'remedies' in item;
+};
+
+const isGeneralRemedy = (item: RemedyItem): item is GeneralRemedy => {
+  return 'solutions' in item;
+};
+
 export default function RemediesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -253,7 +302,7 @@ export default function RemediesPage() {
                           </h3>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {item.planet && (
+                            {isPlanetaryGemstone(item) && (
                               <div>
                                 <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
                                   Planetary Details
@@ -269,7 +318,7 @@ export default function RemediesPage() {
                               </div>
                             )}
                             
-                            {item.benefits && (
+                            {isPlanetaryGemstone(item) && (
                               <div>
                                 <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
                                   Benefits
@@ -280,7 +329,7 @@ export default function RemediesPage() {
                               </div>
                             )}
                             
-                            {item.mantra && (
+                            {isPlanetaryGemstone(item) && (
                               <div>
                                 <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
                                   Mantra
@@ -291,7 +340,7 @@ export default function RemediesPage() {
                               </div>
                             )}
                             
-                            {item.deity && (
+                            {isZodiacRemedy(item) && (
                               <div>
                                 <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
                                   Deity
@@ -303,13 +352,13 @@ export default function RemediesPage() {
                             )}
                           </div>
                           
-                          {(item.remedies || item.solutions) && (
+                          {(isZodiacRemedy(item) || isGeneralRemedy(item)) && (
                             <div className="mt-6">
                               <h4 className="text-lg font-heading font-bold mb-3 text-secondary">
                                 Remedies
                               </h4>
                               <ul className="text-textSoft space-y-2 text-sm">
-                                {(item.remedies || item.solutions).map((remedy, idx) => (
+                                {(isZodiacRemedy(item) ? item.remedies : item.solutions).map((remedy, idx) => (
                                   <li key={idx} className="flex items-start gap-2">
                                     <span className="text-primary">•</span>
                                     {remedy}
