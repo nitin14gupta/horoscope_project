@@ -1,35 +1,74 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { apiService } from '@/api/apiService';
+import type { PanchangData } from '@/api/config';
 
 export default function PanchangPage() {
-  // Mock data for today's panchang
-  const today = new Date();
-  const panchangData = {
-    date: today.toLocaleDateString('en-IN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }),
-    tithi: 'Shukla Paksha Dwadashi',
-    nakshatra: 'Purva Phalguni',
-    yoga: 'Shiva',
-    karana: 'Taitila',
-    sunrise: '06:15 AM',
-    sunset: '06:45 PM',
-    auspiciousTimings: [
-      { name: 'Brahma Muhurta', time: '04:30 AM - 05:30 AM', description: 'Best time for meditation and spiritual practices' },
-      { name: 'Abhijit Muhurta', time: '11:45 AM - 12:30 PM', description: 'Auspicious time for important work and ceremonies' },
-      { name: 'Vijaya Muhurta', time: '02:15 PM - 03:00 PM', description: 'Good time for starting new ventures' },
-      { name: 'Godhuli Kaal', time: '06:30 PM - 07:00 PM', description: 'Twilight period, good for evening prayers' }
-    ],
-    inauspiciousTimings: [
-      { name: 'Rahu Kaal', time: '10:30 AM - 12:00 PM', description: 'Avoid starting new work during this period' },
-      { name: 'Gulika Kaal', time: '03:00 PM - 04:30 PM', description: 'Not suitable for important decisions' }
-    ]
-  };
+  const [panchangData, setPanchangData] = useState<PanchangData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPanchang = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await apiService.getPanchang();
+        
+        if (response.success && response.data) {
+          setPanchangData(response.data);
+        } else {
+          setError(response.error || 'Failed to fetch panchang data');
+        }
+      } catch (err) {
+        setError('Failed to fetch panchang data');
+        console.error('Error fetching panchang data:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPanchang();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-charcoal text-textMain flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-textSoft">Loading panchang data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-charcoal text-textMain flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-2 px-4 rounded-lg transition-all duration-300"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!panchangData) {
+    return (
+      <div className="min-h-screen bg-charcoal text-textMain flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-textSoft">No panchang data available</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-charcoal text-textMain">
@@ -90,70 +129,73 @@ export default function PanchangPage() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-textSoft">Day:</span>
-                  <span className="text-secondary font-semibold">{today.toLocaleDateString('en-IN', { weekday: 'long' })}</span>
+                  <span className="text-secondary font-semibold">
+                    {new Date(panchangData.date).toLocaleDateString('en-IN', { weekday: 'long' })}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-textSoft">Paksha:</span>
-                  <span className="text-secondary font-semibold">Shukla Paksha</span>
+                  <span className="text-secondary font-semibold">
+                    {panchangData.tithi.includes('Shukla') ? 'Shukla Paksha' : 'Krishna Paksha'}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Auspicious Timings */}
-          <div className="bg-hover rounded-lg p-8 border border-secondary/20 mb-8">
-            <h3 className="text-2xl font-heading font-bold text-center mb-6 text-secondary">
-              ✨ Auspicious Timings (Shubh Muhurat)
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {panchangData.auspiciousTimings.map((timing, index) => (
-                <div key={index} className="bg-charcoal rounded-lg p-4 border border-secondary/20">
-                  <h4 className="text-lg font-heading font-bold text-secondary mb-2">
-                    {timing.name}
-                  </h4>
-                  <p className="text-primary font-semibold mb-2">{timing.time}</p>
-                  <p className="text-textSoft text-sm">{timing.description}</p>
-                </div>
-              ))}
+          {panchangData.auspiciousTimings && panchangData.auspiciousTimings.length > 0 && (
+            <div className="bg-hover rounded-lg p-8 border border-secondary/20 mb-8">
+              <h3 className="text-2xl font-heading font-bold text-center mb-6 text-secondary">
+                ✨ Auspicious Timings (Shubh Muhurat)
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {panchangData.auspiciousTimings.map((timing, index) => (
+                  <div key={index} className="bg-charcoal rounded-lg p-4 border border-secondary/20">
+                    <h4 className="text-lg font-heading font-bold text-secondary mb-2">
+                      {timing}
+                    </h4>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Inauspicious Timings */}
-          <div className="bg-hover rounded-lg p-8 border border-tertiary/20 mb-8">
-            <h3 className="text-2xl font-heading font-bold text-center mb-6 text-tertiary">
-              ⚠️ Inauspicious Timings (Avoid These Periods)
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {panchangData.inauspiciousTimings.map((timing, index) => (
-                <div key={index} className="bg-charcoal rounded-lg p-4 border border-tertiary/20">
-                  <h4 className="text-lg font-heading font-bold text-tertiary mb-2">
-                    {timing.name}
-                  </h4>
-                  <p className="text-tertiary font-semibold mb-2">{timing.time}</p>
-                  <p className="text-textSoft text-sm">{timing.description}</p>
-                </div>
-              ))}
+          {panchangData.inauspiciousTimings && panchangData.inauspiciousTimings.length > 0 && (
+            <div className="bg-hover rounded-lg p-8 border border-tertiary/20 mb-8">
+              <h3 className="text-2xl font-heading font-bold text-center mb-6 text-tertiary">
+                ⚠️ Inauspicious Timings (Avoid These Periods)
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {panchangData.inauspiciousTimings.map((timing, index) => (
+                  <div key={index} className="bg-charcoal rounded-lg p-4 border border-tertiary/20">
+                    <h4 className="text-lg font-heading font-bold text-tertiary mb-2">
+                      {timing}
+                    </h4>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Daily Wisdom */}
-          <div className="bg-hover rounded-lg p-8 border border-primary/20">
-            <h3 className="text-2xl font-heading font-bold text-center mb-6 text-primary">
-              🕉️ Daily Wisdom
-            </h3>
-            <div className="text-center">
-              <p className="text-textSoft text-lg leading-relaxed mb-6">
-                &quot;Today is blessed with the energy of {panchangData.nakshatra} nakshatra. 
-                This is an excellent time for spiritual practices, meditation, and connecting 
-                with your inner self. The {panchangData.yoga} yoga brings positive energy 
-                for new beginnings and personal growth.&quot;
-              </p>
-              <div className="text-4xl mb-4">🕉️</div>
-              <p className="text-textSoft">
-                May the divine energy guide you through this blessed day.
-              </p>
+          {panchangData.dailyWisdom && (
+            <div className="bg-hover rounded-lg p-8 border border-primary/20">
+              <h3 className="text-2xl font-heading font-bold text-center mb-6 text-primary">
+                🕉️ Daily Wisdom
+              </h3>
+              <div className="text-center">
+                <p className="text-textSoft text-lg leading-relaxed mb-6">
+                  {panchangData.dailyWisdom}
+                </p>
+                <div className="text-4xl mb-4">🕉️</div>
+                <p className="text-textSoft">
+                  May the divine energy guide you through this blessed day.
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* CTA Section */}
           <div className="text-center mt-12">

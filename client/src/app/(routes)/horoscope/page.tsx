@@ -227,7 +227,7 @@ export default function HoroscopePage() {
                   Your Daily Horoscope
                 </h2>
                 <p className="text-textSoft">
-                  {horoscopeData?.fullName} • {horoscopeData?.zodiacSign.charAt(0).toUpperCase() + horoscopeData?.zodiacSign.slice(1)}
+                  {horoscopeData?.fullName} • {horoscopeData?.zodiacSign ? horoscopeData.zodiacSign.charAt(0).toUpperCase() + horoscopeData.zodiacSign.slice(1) : ''}
                 </p>
               </div>
 
@@ -235,7 +235,7 @@ export default function HoroscopePage() {
                 <div className="space-y-6">
                   {/* Main Prediction */}
                   <div className="bg-charcoal rounded-lg p-6 border border-primary/20">
-                    <h3 className="text-lg font-semibold text-primary mb-3">🌟 Today's Prediction</h3>
+                    <h3 className="text-lg font-semibold text-primary mb-3">🌟 Today&apos;s Prediction</h3>
                     <p className="text-textMain text-lg leading-relaxed">
                       {horoscopeData.prediction}
                     </p>

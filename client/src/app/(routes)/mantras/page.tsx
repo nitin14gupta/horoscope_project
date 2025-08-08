@@ -1,112 +1,74 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-const mantras = [
-  {
-    category: 'Planetary Mantras',
-    icon: '🪐',
-    mantras: [
-      {
-        name: 'Gayatri Mantra',
-        sanskrit: 'ॐ भूर्भुवः स्वः तत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि धियो यो नः प्रचोदयात्',
-        transliteration: 'Om Bhur Bhuvaḥ Svaḥ Tat Savitur Vareṇyaṃ Bhargo Devasya Dhīmahi Dhiyo Yo Naḥ Pracodayāt',
-        meaning: 'Universal prayer for enlightenment and wisdom',
-        benefits: 'Removes obstacles, brings success, enhances intelligence',
-        bestTime: 'Sunrise',
-        repetitions: '108 times'
-      },
-      {
-        name: 'Mahamrityunjaya Mantra',
-        sanskrit: 'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय मामृतात्',
-        transliteration: 'Om Tryambakaṃ Yajāmahe Sugandhiṃ Puṣṭi-vardhanam Urvārukam Iva Bandhanān Mṛtyor Mukṣīya Māmṛtāt',
-        meaning: 'Prayer to Lord Shiva for liberation from death',
-        benefits: 'Health, longevity, protection from accidents',
-        bestTime: 'Early morning or evening',
-        repetitions: '108 times'
-      },
-      {
-        name: 'Ganesh Mantra',
-        sanskrit: 'ॐ गं गणपतये नमः',
-        transliteration: 'Om Gaṃ Gaṇapataye Namaḥ',
-        meaning: 'Salutations to Lord Ganesha',
-        benefits: 'Removes obstacles, brings success in new ventures',
-        bestTime: 'Morning',
-        repetitions: '108 times'
-      }
-    ]
-  },
-  {
-    category: 'Zodiac Specific Mantras',
-    icon: '♈',
-    mantras: [
-      {
-        name: 'Aries - Mars Mantra',
-        sanskrit: 'ॐ क्रां क्रीं क्रौं सः भौमाय नमः',
-        transliteration: 'Om Krāṃ Krīṃ Krauṃ Saḥ Bhaumāya Namaḥ',
-        meaning: 'Prayer to Mars for courage and energy',
-        benefits: 'Increases courage, physical strength, leadership',
-        bestTime: 'Tuesday morning',
-        repetitions: '108 times'
-      },
-      {
-        name: 'Taurus - Venus Mantra',
-        sanskrit: 'ॐ श्रीं शुक्राय नमः',
-        transliteration: 'Om Śrīṃ Śukrāya Namaḥ',
-        meaning: 'Prayer to Venus for love and beauty',
-        benefits: 'Enhances love life, artistic talents, material comforts',
-        bestTime: 'Friday morning',
-        repetitions: '108 times'
-      },
-      {
-        name: 'Gemini - Mercury Mantra',
-        sanskrit: 'ॐ बुं बुधाय नमः',
-        transliteration: 'Om Buṃ Budhāya Namaḥ',
-        meaning: 'Prayer to Mercury for intelligence',
-        benefits: 'Improves communication, business success, learning',
-        bestTime: 'Wednesday morning',
-        repetitions: '108 times'
-      }
-    ]
-  },
-  {
-    category: 'Healing Mantras',
-    icon: '🕉️',
-    mantras: [
-      {
-        name: 'Healing Mantra',
-        sanskrit: 'ॐ नमः शिवाय',
-        transliteration: 'Om Namaḥ Śivāya',
-        meaning: 'Salutations to Lord Shiva',
-        benefits: 'Physical and mental healing, peace of mind',
-        bestTime: 'Any time',
-        repetitions: '108 times'
-      },
-      {
-        name: 'Peace Mantra',
-        sanskrit: 'ॐ शान्तिः शान्तिः शान्तिः',
-        transliteration: 'Om Śāntiḥ Śāntiḥ Śāntiḥ',
-        meaning: 'Peace, peace, peace',
-        benefits: 'Inner peace, stress relief, harmony',
-        bestTime: 'Evening',
-        repetitions: '21 times'
-      },
-      {
-        name: 'Prosperity Mantra',
-        sanskrit: 'ॐ श्री महालक्ष्म्यै नमः',
-        transliteration: 'Om Śrī Mahālakṣmyai Namaḥ',
-        meaning: 'Salutations to Goddess Lakshmi',
-        benefits: 'Wealth, prosperity, abundance',
-        bestTime: 'Friday morning',
-        repetitions: '108 times'
-      }
-    ]
-  }
-];
+import { apiService } from '@/api/apiService';
+import type { Mantra } from '@/api/config';
 
 export default function MantrasPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [mantras, setMantras] = useState<Mantra[]>([]);
+  const [selectedMantra, setSelectedMantra] = useState<Mantra | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  useEffect(() => {
+    const fetchMantras = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await apiService.getMantras(selectedCategory === 'all' ? undefined : selectedCategory);
+        
+        if (response.success && response.data) {
+          setMantras(response.data);
+        } else {
+          setError(response.error || 'Failed to fetch mantras');
+        }
+      } catch (err) {
+        setError('Failed to fetch mantras');
+        console.error('Error fetching mantras:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMantras();
+  }, [selectedCategory]);
+
+  const categories = [
+    { value: 'all', label: 'All Mantras', icon: '🕉️' },
+    { value: 'planetary', label: 'Planetary', icon: '🪐' },
+    { value: 'zodiac', label: 'Zodiac', icon: '♈' },
+    { value: 'healing', label: 'Healing', icon: '🌿' },
+    { value: 'prosperity', label: 'Prosperity', icon: '💰' }
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-charcoal text-textMain flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-textSoft">Loading mantras...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-charcoal text-textMain flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-2 px-4 rounded-lg transition-all duration-300"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-charcoal text-textMain">
@@ -127,190 +89,148 @@ export default function MantrasPage() {
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
-          {/* Categories Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {mantras.map((category) => (
+          {/* Category Filter */}
+          <div className="mb-8">
+            <div className="flex flex-wrap justify-center gap-4">
+              {categories.map((category) => (
+                <button
+                  key={category.value}
+                  onClick={() => setSelectedCategory(category.value)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    selectedCategory === category.value
+                      ? 'bg-primary text-charcoal font-semibold'
+                      : 'bg-hover text-textSoft hover:text-primary border border-primary/20'
+                  }`}
+                >
+                  <span>{category.icon}</span>
+                  <span>{category.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Mantras Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {mantras.map((mantra) => (
               <div
-                key={category.category}
-                onClick={() => setSelectedCategory(selectedCategory === category.category ? null : category.category)}
+                key={mantra.id}
+                onClick={() => setSelectedMantra(selectedMantra?.id === mantra.id ? null : mantra)}
                 className="bg-hover rounded-lg p-6 border border-primary/20 hover:border-primary/40 transition-all duration-300 transform hover:scale-105 cursor-pointer"
               >
-                <div className="text-center">
-                  <div className="text-4xl mb-4">{category.icon}</div>
-                  <h3 className="text-xl font-heading font-bold mb-2 text-primary">
-                    {category.category}
+                <div className="text-center mb-4">
+                  <div className="text-4xl mb-2">🕉️</div>
+                  <h3 className="text-xl font-heading font-bold text-primary mb-2">
+                    {mantra.name}
                   </h3>
-                  <p className="text-textSoft text-sm">
-                    {category.mantras.length} mantras available
-                  </p>
+                  <span className="bg-secondary/20 text-secondary px-2 py-1 rounded text-sm">
+                    {mantra.category}
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <h4 className="text-sm font-semibold text-secondary mb-1">Sanskrit</h4>
+                    <p className="text-textSoft text-sm leading-relaxed">{mantra.sanskrit}</p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-sm font-semibold text-secondary mb-1">Transliteration</h4>
+                    <p className="text-textSoft text-sm">{mantra.transliteration}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-semibold text-secondary mb-1">Meaning</h4>
+                    <p className="text-textSoft text-sm">{mantra.meaning}</p>
+                  </div>
+
+                  <div className="flex justify-between text-xs text-textSoft">
+                    <span>Best Time: {mantra.bestTime}</span>
+                    <span>{mantra.repetitions} times</span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Detailed Mantras */}
-          {selectedCategory && (
-            <div className="bg-hover rounded-lg p-8 border border-secondary/20 mb-8">
-              {(() => {
-                const category = mantras.find(c => c.category === selectedCategory);
-                if (!category) return null;
-                
-                return (
+          {/* Detailed View */}
+          {selectedMantra && (
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-hover rounded-lg p-8 border border-secondary/20">
+                <div className="text-center mb-8">
+                  <div className="text-6xl mb-4">🕉️</div>
+                  <h2 className="text-3xl font-heading font-bold text-secondary mb-4">
+                    {selectedMantra.name}
+                  </h2>
+                  <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">
+                    {selectedMantra.category}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    <div className="text-center mb-8">
-                      <div className="text-6xl mb-4">{category.icon}</div>
-                      <h2 className="text-3xl font-heading font-bold text-secondary mb-4">
-                        {category.category}
-                      </h2>
-                    </div>
-                    
-                    <div className="space-y-8">
-                      {category.mantras.map((mantra, index) => (
-                        <div key={index} className="bg-charcoal rounded-lg p-6 border border-primary/20">
-                          <h3 className="text-xl font-heading font-bold mb-4 text-primary">
-                            {mantra.name}
-                          </h3>
-                          
-                          <div className="space-y-4">
-                            <div>
-                              <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
-                                Sanskrit Text
-                              </h4>
-                              <p className="text-textMain text-lg leading-relaxed font-sans">
-                                {mantra.sanskrit}
-                              </p>
-                            </div>
-                            
-                            <div>
-                              <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
-                                Transliteration
-                              </h4>
-                              <p className="text-textSoft text-lg leading-relaxed">
-                                {mantra.transliteration}
-                              </p>
-                            </div>
-                            
-                            <div>
-                              <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
-                                Meaning
-                              </h4>
-                              <p className="text-textSoft">
-                                {mantra.meaning}
-                              </p>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div>
-                                <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
-                                  Benefits
-                                </h4>
-                                <p className="text-textSoft text-sm">
-                                  {mantra.benefits}
-                                </p>
-                              </div>
-                              <div>
-                                <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
-                                  Best Time
-                                </h4>
-                                <p className="text-textSoft text-sm">
-                                  {mantra.bestTime}
-                                </p>
-                              </div>
-                              <div>
-                                <h4 className="text-lg font-heading font-bold mb-2 text-secondary">
-                                  Repetitions
-                                </h4>
-                                <p className="text-textSoft text-sm">
-                                  {mantra.repetitions}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                    <h3 className="text-xl font-heading font-bold mb-4 text-primary">
+                      Sanskrit Text
+                    </h3>
+                    <div className="bg-charcoal rounded-lg p-4 border border-primary/20">
+                      <p className="text-lg text-center leading-relaxed">{selectedMantra.sanskrit}</p>
                     </div>
                   </div>
-                );
-              })()}
+
+                  <div>
+                    <h3 className="text-xl font-heading font-bold mb-4 text-primary">
+                      Transliteration
+                    </h3>
+                    <div className="bg-charcoal rounded-lg p-4 border border-primary/20">
+                      <p className="text-lg text-center">{selectedMantra.transliteration}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <h3 className="text-xl font-heading font-bold mb-4 text-primary">
+                    Meaning & Benefits
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-lg font-semibold text-secondary mb-2">Meaning</h4>
+                      <p className="text-textSoft">{selectedMantra.meaning}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-secondary mb-2">Benefits</h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {selectedMantra.benefits.map((benefit, index) => (
+                          <li key={index} className="text-textSoft text-sm">{benefit}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-charcoal rounded-lg border border-secondary/20">
+                    <h4 className="text-lg font-semibold text-secondary mb-2">Best Time</h4>
+                    <p className="text-primary">{selectedMantra.bestTime}</p>
+                  </div>
+                  <div className="text-center p-4 bg-charcoal rounded-lg border border-secondary/20">
+                    <h4 className="text-lg font-semibold text-secondary mb-2">Repetitions</h4>
+                    <p className="text-primary">{selectedMantra.repetitions} times</p>
+                  </div>
+                  <div className="text-center p-4 bg-charcoal rounded-lg border border-secondary/20">
+                    <h4 className="text-lg font-semibold text-secondary mb-2">Category</h4>
+                    <p className="text-primary">{selectedMantra.category}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Mantra Guidelines */}
-          <div className="bg-hover rounded-lg p-8 border border-primary/20 mb-8">
-            <h2 className="text-3xl font-heading font-bold text-center mb-8 text-primary">
-              📖 Mantra Guidelines
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-charcoal rounded-lg p-6 border border-secondary/20">
-                <h3 className="text-lg font-heading font-bold mb-3 text-secondary">
-                  🕉️ How to Chant
-                </h3>
-                <ul className="text-textSoft space-y-2 text-sm">
-                  <li>• Sit in a comfortable position</li>
-                  <li>• Close your eyes and focus</li>
-                  <li>• Use a mala (rosary) for counting</li>
-                  <li>• Chant with devotion and faith</li>
-                  <li>• Maintain consistent timing</li>
-                </ul>
-              </div>
-              <div className="bg-charcoal rounded-lg p-6 border border-secondary/20">
-                <h3 className="text-lg font-heading font-bold mb-3 text-secondary">
-                  🌅 Best Practices
-                </h3>
-                <ul className="text-textSoft space-y-2 text-sm">
-                  <li>• Chant during Brahma Muhurta (4:30-5:30 AM)</li>
-                  <li>• Face east while chanting</li>
-                  <li>• Use pure water for purification</li>
-                  <li>• Maintain celibacy for better results</li>
-                  <li>• Follow a vegetarian diet</li>
-                </ul>
-              </div>
-              <div className="bg-charcoal rounded-lg p-6 border border-secondary/20">
-                <h3 className="text-lg font-heading font-bold mb-3 text-secondary">
-                  🎯 Benefits of Mantra Chanting
-                </h3>
-                <ul className="text-textSoft space-y-2 text-sm">
-                  <li>• Reduces stress and anxiety</li>
-                  <li>• Improves concentration</li>
-                  <li>• Enhances spiritual growth</li>
-                  <li>• Brings peace of mind</li>
-                  <li>• Removes negative energies</li>
-                </ul>
-              </div>
-              <div className="bg-charcoal rounded-lg p-6 border border-secondary/20">
-                <h3 className="text-lg font-heading font-bold mb-3 text-secondary">
-                  ⚠️ Important Notes
-                </h3>
-                <ul className="text-textSoft space-y-2 text-sm">
-                  <li>• Start with simple mantras</li>
-                  <li>• Be patient with results</li>
-                  <li>• Maintain regular practice</li>
-                  <li>• Respect the sacred nature</li>
-                  <li>• Seek guidance if needed</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
           {/* CTA Section */}
-          <div className="text-center">
+          <div className="text-center mt-12">
             <Link
               href="/horoscope"
-              className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg inline-block mr-4"
-            >
-              🔭 Get My Horoscope
-            </Link>
-            <Link
-              href="/learn"
-              className="bg-secondary hover:bg-secondary/80 text-charcoal font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg inline-block mr-4"
-            >
-              📖 Learn Astrology
-            </Link>
-            <Link
-              href="/panchang"
               className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg inline-block"
             >
-              🗓️ Today&apos;s Panchang
+              🔭 Get My Horoscope
             </Link>
           </div>
         </div>

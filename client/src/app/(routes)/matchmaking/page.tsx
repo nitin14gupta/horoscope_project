@@ -1,68 +1,94 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-const zodiacSigns = [
-  { value: 'aries', label: '♈ Aries', element: 'Fire' },
-  { value: 'taurus', label: '♉ Taurus', element: 'Earth' },
-  { value: 'gemini', label: '♊ Gemini', element: 'Air' },
-  { value: 'cancer', label: '♋ Cancer', element: 'Water' },
-  { value: 'leo', label: '♌ Leo', element: 'Fire' },
-  { value: 'virgo', label: '♍ Virgo', element: 'Earth' },
-  { value: 'libra', label: '♎ Libra', element: 'Air' },
-  { value: 'scorpio', label: '♏ Scorpio', element: 'Water' },
-  { value: 'sagittarius', label: '♐ Sagittarius', element: 'Fire' },
-  { value: 'capricorn', label: '♑ Capricorn', element: 'Earth' },
-  { value: 'aquarius', label: '♒ Aquarius', element: 'Air' },
-  { value: 'pisces', label: '♓ Pisces', element: 'Water' }
-];
-
-const compatibilityMatrix = {
-  aries: { fire: 90, earth: 60, air: 80, water: 40 },
-  taurus: { fire: 60, earth: 90, air: 40, water: 80 },
-  gemini: { fire: 80, earth: 40, air: 90, water: 60 },
-  cancer: { fire: 40, earth: 80, water: 90, air: 60 },
-  leo: { fire: 90, earth: 60, air: 80, water: 40 },
-  virgo: { fire: 60, earth: 90, air: 40, water: 80 },
-  libra: { fire: 80, earth: 40, air: 90, water: 60 },
-  scorpio: { fire: 40, earth: 80, water: 90, air: 60 },
-  sagittarius: { fire: 90, earth: 60, air: 80, water: 40 },
-  capricorn: { fire: 60, earth: 90, air: 40, water: 80 },
-  aquarius: { fire: 80, earth: 40, air: 90, water: 60 },
-  pisces: { fire: 40, earth: 80, water: 90, air: 60 }
-};
-
-const getCompatibilityScore = (sign1: string, sign2: string) => {
-  const element1 = zodiacSigns.find(s => s.value === sign1)?.element;
-  const element2 = zodiacSigns.find(s => s.value === sign2)?.element;
-  
-  if (!element1 || !element2) return 0;
-  
-  const score = compatibilityMatrix[sign1 as keyof typeof compatibilityMatrix]?.[element2 as keyof typeof compatibilityMatrix.aries] || 0;
-  return score;
-};
-
-const getCompatibilityMessage = (score: number) => {
-  if (score >= 85) return { message: "Perfect Match! 💕", color: "text-green-400" };
-  if (score >= 70) return { message: "Great Compatibility! ✨", color: "text-blue-400" };
-  if (score >= 50) return { message: "Good Compatibility! 👍", color: "text-yellow-400" };
-  return { message: "Challenging Match ⚠️", color: "text-red-400" };
-};
+import { apiService } from '@/api/apiService';
+import type { ZodiacSign, MatchmakingRequest, MatchmakingResponse } from '@/api/config';
 
 export default function MatchmakingPage() {
+  const [zodiacSigns, setZodiacSigns] = useState<ZodiacSign[]>([]);
   const [sign1, setSign1] = useState('');
   const [sign2, setSign2] = useState('');
   const [showResult, setShowResult] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [compatibilityResult, setCompatibilityResult] = useState<MatchmakingResponse | null>(null);
 
-  const handleCheckCompatibility = () => {
-    if (sign1 && sign2) {
-      setShowResult(true);
+  useEffect(() => {
+    const fetchZodiacSigns = async () => {
+      try {
+        const response = await apiService.getZodiacSigns();
+        if (response.success && response.data) {
+          setZodiacSigns(response.data);
+        } else {
+          setError(response.error || 'Failed to fetch zodiac signs');
+        }
+      } catch (err) {
+        setError('Failed to fetch zodiac signs');
+        console.error('Error fetching zodiac signs:', err);
+      }
+    };
+
+    fetchZodiacSigns();
+  }, []);
+
+  const handleCheckCompatibility = async () => {
+    if (!sign1 || !sign2) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const request: MatchmakingRequest = {
+        zodiacSign1: sign1,
+        zodiacSign2: sign2
+      };
+
+      const response = await apiService.getCompatibility(request);
+      
+      if (response.success && response.data) {
+        setCompatibilityResult(response.data);
+        setShowResult(true);
+      } else {
+        setError(response.error || 'Failed to check compatibility');
+      }
+    } catch (err) {
+      setError('Failed to check compatibility');
+      console.error('Error checking compatibility:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const score = getCompatibilityScore(sign1, sign2);
-  const compatibility = getCompatibilityMessage(score);
+  const getCompatibilityColor = (score: number) => {
+    if (score >= 85) return "text-green-400";
+    if (score >= 70) return "text-blue-400";
+    if (score >= 50) return "text-yellow-400";
+    return "text-red-400";
+  };
+
+  const getCompatibilityMessage = (score: number) => {
+    if (score >= 85) return "Perfect Match! 💕";
+    if (score >= 70) return "Great Compatibility! ✨";
+    if (score >= 50) return "Good Compatibility! 👍";
+    return "Challenging Match ⚠️";
+  };
+
+  if (error && !zodiacSigns.length) {
+    return (
+      <div className="min-h-screen bg-charcoal text-textMain flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-2 px-4 rounded-lg transition-all duration-300"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-charcoal text-textMain">
@@ -89,7 +115,6 @@ export default function MatchmakingPage() {
                 🔮 Check Love Compatibility
               </h2>
                
-               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div>
                   <label className="block text-textSoft mb-4 text-lg font-semibold">
@@ -102,8 +127,8 @@ export default function MatchmakingPage() {
                   >
                     <option value="">Select zodiac sign</option>
                     {zodiacSigns.map((sign) => (
-                      <option key={sign.value} value={sign.value}>
-                        {sign.label} ({sign.element})
+                      <option key={sign.id} value={sign.id}>
+                        {sign.symbol} {sign.name} ({sign.element})
                       </option>
                     ))}
                   </select>
@@ -120,8 +145,8 @@ export default function MatchmakingPage() {
                   >
                     <option value="">Select zodiac sign</option>
                     {zodiacSigns.map((sign) => (
-                      <option key={sign.value} value={sign.value}>
-                        {sign.label} ({sign.element})
+                      <option key={sign.id} value={sign.id}>
+                        {sign.symbol} {sign.name} ({sign.element})
                       </option>
                     ))}
                   </select>
@@ -131,12 +156,25 @@ export default function MatchmakingPage() {
               <div className="text-center">
                 <button
                   onClick={handleCheckCompatibility}
-                  disabled={!sign1 || !sign2}
+                  disabled={!sign1 || !sign2 || isLoading}
                   className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  🔮 Check Compatibility
+                  {isLoading ? (
+                    <span className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-charcoal mr-2"></div>
+                      Checking...
+                    </span>
+                  ) : (
+                    '🔮 Check Compatibility'
+                  )}
                 </button>
               </div>
+
+              {error && (
+                <div className="mt-4 text-center">
+                  <p className="text-red-400">{error}</p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="bg-hover rounded-lg p-8 border border-secondary/20">
@@ -147,57 +185,88 @@ export default function MatchmakingPage() {
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">
-                    {zodiacSigns.find(s => s.value === sign1)?.label}
+              {compatibilityResult && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">
+                        {zodiacSigns.find(s => s.id === sign1)?.symbol} {zodiacSigns.find(s => s.id === sign1)?.name}
+                      </div>
+                      <p className="text-textSoft">
+                        {zodiacSigns.find(s => s.id === sign1)?.element} Element
+                      </p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">
+                        {zodiacSigns.find(s => s.id === sign2)?.symbol} {zodiacSigns.find(s => s.id === sign2)?.name}
+                      </div>
+                      <p className="text-textSoft">
+                        {zodiacSigns.find(s => s.id === sign2)?.element} Element
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-textSoft">
-                    {zodiacSigns.find(s => s.value === sign1)?.element} Element
-                  </p>
-                </div>
 
-                <div className="text-center">
-                  <div className="text-4xl mb-2">
-                    {zodiacSigns.find(s => s.value === sign2)?.label}
+                  <div className="text-center mb-8">
+                    <div className="text-6xl mb-4">❤️</div>
+                    <h3 className={`text-2xl font-heading font-bold mb-4 ${getCompatibilityColor(compatibilityResult.compatibility)}`}>
+                      {getCompatibilityMessage(compatibilityResult.compatibility)}
+                    </h3>
+                    <div className="text-4xl font-bold text-primary mb-4">
+                      {compatibilityResult.compatibility}%
+                    </div>
+                    <div className="w-full bg-charcoal rounded-full h-4 mb-4">
+                      <div 
+                        className="bg-primary h-4 rounded-full transition-all duration-1000"
+                        style={{ width: `${compatibilityResult.compatibility}%` }}
+                      ></div>
+                    </div>
                   </div>
-                  <p className="text-textSoft">
-                    {zodiacSigns.find(s => s.value === sign2)?.element} Element
-                  </p>
-                </div>
-              </div>
 
-              <div className="text-center mb-8">
-                <div className="text-6xl mb-4">❤️</div>
-                <h3 className={`text-2xl font-heading font-bold mb-4 ${compatibility.color}`}>
-                  {compatibility.message}
-                </h3>
-                <div className="text-4xl font-bold text-primary mb-4">
-                  {score}%
-                </div>
-                <div className="w-full bg-charcoal rounded-full h-4 mb-4">
-                  <div 
-                    className="bg-primary h-4 rounded-full transition-all duration-1000"
-                    style={{ width: `${score}%` }}
-                  ></div>
-                </div>
-              </div>
+                  <div className="bg-charcoal rounded-lg p-6 border border-primary/20 mb-8">
+                    <h4 className="text-xl font-heading font-bold mb-4 text-primary">
+                      💫 Compatibility Analysis
+                    </h4>
+                    <p className="text-textSoft leading-relaxed mb-4">
+                      {compatibilityResult.message}
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                      <div className="text-center">
+                        <h5 className="text-lg font-semibold text-secondary mb-2">Love</h5>
+                        <p className="text-textSoft text-sm">{compatibilityResult.loveCompatibility}</p>
+                      </div>
+                      <div className="text-center">
+                        <h5 className="text-lg font-semibold text-secondary mb-2">Friendship</h5>
+                        <p className="text-textSoft text-sm">{compatibilityResult.friendshipCompatibility}</p>
+                      </div>
+                      <div className="text-center">
+                        <h5 className="text-lg font-semibold text-secondary mb-2">Business</h5>
+                        <p className="text-textSoft text-sm">{compatibilityResult.businessCompatibility}</p>
+                      </div>
+                    </div>
 
-              <div className="bg-charcoal rounded-lg p-6 border border-primary/20 mb-8">
-                <h4 className="text-xl font-heading font-bold mb-4 text-primary">
-                  💫 Compatibility Analysis
-                </h4>
-                <p className="text-textSoft leading-relaxed">
-                  {score >= 85 && "This is a perfect match! Your elements complement each other beautifully, creating a harmonious and passionate relationship. You'll find deep understanding and mutual growth in this partnership."}
-                  {score >= 70 && score < 85 && "Great compatibility! You have strong potential for a loving and supportive relationship. Your differences will help you grow together while your similarities create a strong foundation."}
-                  {score >= 50 && score < 70 && "Good compatibility with room for growth. You'll need to work on communication and understanding, but with effort, this relationship can flourish and bring out the best in both partners."}
-                  {score < 50 && "This match presents some challenges, but every relationship can work with love, patience, and understanding. Focus on open communication and respect for each other's differences."}
-                </p>
-              </div>
+                    {compatibilityResult.tips && compatibilityResult.tips.length > 0 && (
+                      <div className="mt-6">
+                        <h5 className="text-lg font-semibold text-primary mb-3">💡 Tips for Success</h5>
+                        <ul className="list-disc list-inside space-y-1">
+                          {compatibilityResult.tips.map((tip, index) => (
+                            <li key={index} className="text-textSoft text-sm">{tip}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
 
               <div className="text-center space-x-4">
                 <button
-                  onClick={() => setShowResult(false)}
+                  onClick={() => {
+                    setShowResult(false);
+                    setCompatibilityResult(null);
+                    setError(null);
+                  }}
                   className="bg-secondary hover:bg-secondary/80 text-charcoal font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
                 >
                   Check Another Match
