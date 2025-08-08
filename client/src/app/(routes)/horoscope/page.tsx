@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { apiService } from '@/api/apiService';
+import type { HoroscopeRequest, HoroscopeResponse } from '@/api/config';
 
 interface HoroscopeForm {
   fullName: string;
@@ -39,6 +41,8 @@ export default function HoroscopePage() {
 
   const [showResult, setShowResult] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [horoscopeData, setHoroscopeData] = useState<HoroscopeResponse | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -51,24 +55,33 @@ export default function HoroscopePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
+    setShowResult(false);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setShowResult(true);
-    }, 2000);
-  };
+    try {
+      const request: HoroscopeRequest = {
+        fullName: formData.fullName,
+        dateOfBirth: formData.dateOfBirth,
+        timeOfBirth: formData.timeOfBirth || undefined,
+        placeOfBirth: formData.placeOfBirth || undefined,
+        zodiacSign: formData.zodiacSign,
+        gender: formData.gender || undefined,
+      };
 
-  const generateHoroscope = () => {
-    const predictions = [
-      "Today brings positive energy. You might encounter an opportunity at work. Avoid conflicts with loved ones. Lucky color: Yellow. Lucky number: 4.",
-      "The stars align in your favor today. A long-awaited wish may come true. Focus on your health and well-being. Lucky color: Blue. Lucky number: 7.",
-      "Mercury's influence brings clarity to your thoughts. Communication will be key today. Trust your intuition. Lucky color: Green. Lucky number: 3.",
-      "Venus blesses you with harmony in relationships. Express your feelings openly. Financial gains are possible. Lucky color: Pink. Lucky number: 9.",
-      "Mars energy empowers you to take action. Be bold in your decisions. Physical activity will bring good results. Lucky color: Red. Lucky number: 1."
-    ];
-    
-    return predictions[Math.floor(Math.random() * predictions.length)];
+      const response = await apiService.getHoroscope(request);
+      
+      if (response.success && response.data) {
+        setHoroscopeData(response.data);
+        setShowResult(true);
+      } else {
+        setError(response.error || 'Failed to get horoscope. Please try again.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Horoscope error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -95,6 +108,12 @@ export default function HoroscopePage() {
               <h2 className="text-2xl font-heading font-bold text-center mb-8 text-secondary">
                 📋 Enter Your Birth Details
               </h2>
+              
+              {error && (
+                <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6">
+                  <p className="text-red-400">{error}</p>
+                </div>
+              )}
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
@@ -208,19 +227,67 @@ export default function HoroscopePage() {
                   Your Daily Horoscope
                 </h2>
                 <p className="text-textSoft">
-                  {formData.fullName} • {formData.zodiacSign.charAt(0).toUpperCase() + formData.zodiacSign.slice(1)}
+                  {horoscopeData?.fullName} • {horoscopeData?.zodiacSign.charAt(0).toUpperCase() + horoscopeData?.zodiacSign.slice(1)}
                 </p>
               </div>
 
-              <div className="bg-charcoal rounded-lg p-6 border border-primary/20">
-                <p className="text-textMain text-lg leading-relaxed">
-                  {generateHoroscope()}
-                </p>
-              </div>
+              {horoscopeData && (
+                <div className="space-y-6">
+                  {/* Main Prediction */}
+                  <div className="bg-charcoal rounded-lg p-6 border border-primary/20">
+                    <h3 className="text-lg font-semibold text-primary mb-3">🌟 Today's Prediction</h3>
+                    <p className="text-textMain text-lg leading-relaxed">
+                      {horoscopeData.prediction}
+                    </p>
+                  </div>
+
+                  {/* Lucky Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-charcoal rounded-lg p-4 border border-secondary/20">
+                      <h4 className="text-secondary font-semibold mb-2">🍀 Lucky Color</h4>
+                      <p className="text-textMain">{horoscopeData.luckyColor}</p>
+                    </div>
+                    <div className="bg-charcoal rounded-lg p-4 border border-secondary/20">
+                      <h4 className="text-secondary font-semibold mb-2">🔢 Lucky Number</h4>
+                      <p className="text-textMain">{horoscopeData.luckyNumber}</p>
+                    </div>
+                  </div>
+
+                  {/* Detailed Predictions */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-charcoal rounded-lg p-4 border border-primary/20">
+                      <h4 className="text-primary font-semibold mb-2">❤️ Love</h4>
+                      <p className="text-textSoft text-sm">{horoscopeData.love}</p>
+                    </div>
+                    <div className="bg-charcoal rounded-lg p-4 border border-primary/20">
+                      <h4 className="text-primary font-semibold mb-2">💼 Career</h4>
+                      <p className="text-textSoft text-sm">{horoscopeData.career}</p>
+                    </div>
+                    <div className="bg-charcoal rounded-lg p-4 border border-primary/20">
+                      <h4 className="text-primary font-semibold mb-2">💰 Finance</h4>
+                      <p className="text-textSoft text-sm">{horoscopeData.finance}</p>
+                    </div>
+                    <div className="bg-charcoal rounded-lg p-4 border border-primary/20">
+                      <h4 className="text-primary font-semibold mb-2">🏥 Health</h4>
+                      <p className="text-textSoft text-sm">{horoscopeData.health}</p>
+                    </div>
+                  </div>
+
+                  {/* Compatibility */}
+                  <div className="bg-charcoal rounded-lg p-4 border border-secondary/20">
+                    <h4 className="text-secondary font-semibold mb-2">💫 Compatibility</h4>
+                    <p className="text-textSoft text-sm">{horoscopeData.compatibility}</p>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-6 text-center">
                 <button
-                  onClick={() => setShowResult(false)}
+                  onClick={() => {
+                    setShowResult(false);
+                    setHoroscopeData(null);
+                    setError(null);
+                  }}
                   className="bg-secondary hover:bg-secondary/80 text-charcoal font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 mr-4"
                 >
                   Get Another Reading
