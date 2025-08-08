@@ -135,10 +135,11 @@ class ApiService {
   }
 
   // Calendar API
-  async getCalendarEvents(month?: number, year?: number): Promise<ApiResponse<CalendarEvent[]>> {
+  async getCalendarEvents(month?: number, year?: number, zodiac?: string): Promise<ApiResponse<CalendarEvent[]>> {
     const params = new URLSearchParams();
     if (month !== undefined) params.append('month', month.toString());
     if (year !== undefined) params.append('year', year.toString());
+    if (zodiac) params.append('zodiac', zodiac);
     
     const endpoint = params.toString() 
       ? `${API_CONFIG.ENDPOINTS.CALENDAR}?${params.toString()}`
@@ -146,9 +147,13 @@ class ApiService {
     return this.makeRequest<CalendarEvent[]>(endpoint);
   }
 
-  async getWeeklyForecast(weekStart?: string): Promise<ApiResponse<WeeklyForecast>> {
-    const endpoint = weekStart 
-      ? `${API_CONFIG.ENDPOINTS.CALENDAR}/weekly?weekStart=${weekStart}`
+  async getWeeklyForecast(weekStart?: string, zodiac?: string): Promise<ApiResponse<WeeklyForecast>> {
+    const params = new URLSearchParams();
+    if (weekStart) params.append('weekStart', weekStart);
+    if (zodiac) params.append('zodiac', zodiac);
+    
+    const endpoint = params.toString() 
+      ? `${API_CONFIG.ENDPOINTS.CALENDAR}/weekly?${params.toString()}`
       : `${API_CONFIG.ENDPOINTS.CALENDAR}/weekly`;
     return this.makeRequest<WeeklyForecast>(endpoint);
   }
