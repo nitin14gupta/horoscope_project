@@ -4,22 +4,3 @@ python-dateutil==2.8.2
 pytz==2023.3
 requests==2.31.0
 gunicorn==21.2.0
-# Real astrological data APIs
-ephem==4.1.4
-# AI/ML for predictions
-openai==1.3.0
-anthropic==0.7.0
-# Date and time handling
-python-dateutil==2.8.2
-pytz==2023.3
-# HTTP requests
-requests==2.31.0
-aiohttp==3.9.0
-# Environment variables
-python-dotenv==1.0.0
-# JSON handling
-jsonschema==4.20.0
-# Caching
-redis==5.0.1
-# Logging
-loguru==0.7.2

@@ -1,17 +1,11 @@
 from flask import Blueprint, request, jsonify
-import sys
-import os
-from datetime import datetime
-
-# Add the parent directory to the path to import utils
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from utils.astrological_service import astrological_service
+import random
 
 birth_chart_bp = Blueprint('birth_chart', __name__)
 
 @birth_chart_bp.route('/birth-chart', methods=['POST'])
 def calculate_birth_chart():
-    """Calculate real birth chart based on user input"""
+    """Calculate birth chart based on user input"""
     try:
         data = request.get_json()
         
@@ -25,48 +19,44 @@ def calculate_birth_chart():
                 }), 400
         
         name = data['name']
-        date_str = data['date']
-        time_str = data['time']
+        date = data['date']
+        time = data['time']
         place = data['place']
-        latitude = float(data.get('latitude', 0))
-        longitude = float(data.get('longitude', 0))
         
-        # Parse date and time
-        try:
-            date_obj = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
-        except ValueError:
-            return jsonify({
-                'success': False,
-                'error': 'Invalid date or time format'
-            }), 400
+        # Generate mock birth chart data
+        planets = [
+            {'name': 'Sun', 'symbol': '☀️', 'element': 'Fire', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'name': 'Moon', 'symbol': '🌙', 'element': 'Water', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'name': 'Mercury', 'symbol': '☿', 'element': 'Earth', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'name': 'Venus', 'symbol': '♀', 'element': 'Earth', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'name': 'Mars', 'symbol': '♂', 'element': 'Fire', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'name': 'Jupiter', 'symbol': '♃', 'element': 'Fire', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'name': 'Saturn', 'symbol': '♄', 'element': 'Earth', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'name': 'Rahu', 'symbol': '☊', 'element': 'Shadow', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'name': 'Ketu', 'symbol': '☋', 'element': 'Shadow', 'degree': random.randint(0, 30), 'house': random.randint(1, 12), 'status': random.choice(['Strong', 'Weak']), 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])}
+        ]
         
-        # Calculate real planetary positions
-        planetary_positions = astrological_service.calculate_planetary_positions(
-            date_obj, latitude, longitude
-        )
-        
-        # Calculate house positions
-        house_positions = astrological_service.calculate_houses(
-            date_obj, latitude, longitude
-        )
-        
-        # Determine ascendant, sun sign, and moon sign
-        ascendant = astrological_service.get_zodiac_sign(date_obj)
-        
-        # Get sun sign from planetary positions
-        sun_position = next((p for p in planetary_positions if p['name'] == 'Sun'), None)
-        sun_sign = sun_position['sign'] if sun_position else ascendant
-        
-        # Get moon sign from planetary positions
-        moon_position = next((p for p in planetary_positions if p['name'] == 'Moon'), None)
-        moon_sign = moon_position['sign'] if moon_position else ascendant
+        houses = [
+            {'number': 1, 'name': 'Ascendant', 'area': 'Self, personality, appearance', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 2, 'name': 'Wealth', 'area': 'Finances, family, speech', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 3, 'name': 'Siblings', 'area': 'Communication, courage, short journeys', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 4, 'name': 'Mother', 'area': 'Home, property, vehicles', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 5, 'name': 'Children', 'area': 'Intelligence, creativity, romance', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 6, 'name': 'Enemies', 'area': 'Health, service, obstacles', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 7, 'name': 'Spouse', 'area': 'Partnership, marriage, business', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 8, 'name': 'Longevity', 'area': 'Mystery, research, sudden events', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 9, 'name': 'Dharma', 'area': 'Religion, guru, higher learning', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 10, 'name': 'Career', 'area': 'Profession, authority, reputation', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 11, 'name': 'Income', 'area': 'Gains, friends, elder siblings', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])},
+            {'number': 12, 'name': 'Moksha', 'area': 'Expenses, foreign travel, liberation', 'sign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'])}
+        ]
         
         birth_chart = {
-            'ascendant': ascendant.capitalize(),
-            'sunSign': sun_sign.capitalize(),
-            'moonSign': moon_sign.capitalize(),
-            'planetaryPositions': planetary_positions,
-            'housePositions': house_positions
+            'ascendant': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']),
+            'sunSign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']),
+            'moonSign': random.choice(['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']),
+            'planetaryPositions': planets,
+            'housePositions': houses
         }
         
         return jsonify({

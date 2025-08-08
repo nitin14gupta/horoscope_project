@@ -10,7 +10,6 @@ export default function CalendarPage() {
   const [weeklyForecast, setWeeklyForecast] = useState<WeeklyForecast | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedZodiac, setSelectedZodiac] = useState<string>('');
 
   useEffect(() => {
     const fetchCalendarData = async () => {
@@ -18,23 +17,16 @@ export default function CalendarPage() {
         setIsLoading(true);
         setError(null);
         
-        // Fetch calendar events with zodiac filter if selected
-        const eventsResponse = await apiService.getCalendarEvents(
-          undefined, 
-          undefined, 
-          selectedZodiac || undefined
-        );
+        // Fetch calendar events
+        const eventsResponse = await apiService.getCalendarEvents();
         if (eventsResponse.success && eventsResponse.data) {
           setEvents(eventsResponse.data);
         } else {
           setError(eventsResponse.error || 'Failed to fetch calendar events');
         }
 
-        // Fetch weekly forecast with zodiac filter if selected
-        const forecastResponse = await apiService.getWeeklyForecast(
-          undefined, 
-          selectedZodiac || undefined
-        );
+        // Fetch weekly forecast
+        const forecastResponse = await apiService.getWeeklyForecast();
         if (forecastResponse.success && forecastResponse.data) {
           setWeeklyForecast(forecastResponse.data);
         }
@@ -47,7 +39,7 @@ export default function CalendarPage() {
     };
 
     fetchCalendarData();
-  }, [selectedZodiac]);
+  }, []);
 
   const getMonthName = (month: number) => {
     const months = [
@@ -75,22 +67,6 @@ export default function CalendarPage() {
     if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return "Sagittarius";
     return "Capricorn";
   };
-
-  const zodiacSigns = [
-    { id: '', name: 'All Signs', symbol: '🌟' },
-    { id: 'aries', name: 'Aries', symbol: '♈' },
-    { id: 'taurus', name: 'Taurus', symbol: '♉' },
-    { id: 'gemini', name: 'Gemini', symbol: '♊' },
-    { id: 'cancer', name: 'Cancer', symbol: '♋' },
-    { id: 'leo', name: 'Leo', symbol: '♌' },
-    { id: 'virgo', name: 'Virgo', symbol: '♍' },
-    { id: 'libra', name: 'Libra', symbol: '♎' },
-    { id: 'scorpio', name: 'Scorpio', symbol: '♏' },
-    { id: 'sagittarius', name: 'Sagittarius', symbol: '♐' },
-    { id: 'capricorn', name: 'Capricorn', symbol: '♑' },
-    { id: 'aquarius', name: 'Aquarius', symbol: '♒' },
-    { id: 'pisces', name: 'Pisces', symbol: '♓' }
-  ];
 
   if (isLoading) {
     return (
@@ -138,29 +114,6 @@ export default function CalendarPage() {
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
-          {/* Zodiac Filter */}
-          <div className="bg-hover rounded-lg p-6 border border-primary/20 mb-8">
-            <h3 className="text-xl font-heading font-bold mb-4 text-primary">
-              🔮 Filter by Zodiac Sign
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              {zodiacSigns.map((zodiac) => (
-                <button
-                  key={zodiac.id}
-                  onClick={() => setSelectedZodiac(zodiac.id)}
-                  className={`p-3 rounded-lg border transition-all duration-300 ${
-                    selectedZodiac === zodiac.id
-                      ? 'bg-primary text-charcoal border-primary'
-                      : 'bg-charcoal text-textMain border-secondary/20 hover:border-primary/50'
-                  }`}
-                >
-                  <div className="text-2xl mb-1">{zodiac.symbol}</div>
-                  <div className="text-xs font-medium">{zodiac.name}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Current Month Overview */}
           <div className="bg-hover rounded-lg p-8 border border-primary/20 mb-8">
             <div className="text-center mb-8">
@@ -170,13 +123,6 @@ export default function CalendarPage() {
               </h2>
               <p className="text-textSoft">
                 Current Zodiac Sign: <span className="text-primary font-semibold">{getCurrentZodiacSign()}</span>
-                {selectedZodiac && (
-                  <span className="ml-4">
-                    Filtered for: <span className="text-secondary font-semibold">
-                      {zodiacSigns.find(z => z.id === selectedZodiac)?.name}
-                    </span>
-                  </span>
-                )}
               </p>
             </div>
 
@@ -211,12 +157,6 @@ export default function CalendarPage() {
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {events.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-textSoft">No events found for the selected criteria.</p>
               </div>
             )}
           </div>
