@@ -5,7 +5,7 @@ class Config:
     """Configuration class for API keys and settings"""
     
     # API Keys for AI providers (must be set via environment)
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-proj-your-openai-api-key-here')
     
     # External API endpoints
     EXTERNAL_APIS = {

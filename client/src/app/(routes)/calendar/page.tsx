@@ -23,12 +23,15 @@ export default function CalendarPage() {
           setEvents(eventsResponse.data);
         } else {
           setError(eventsResponse.error || 'Failed to fetch calendar events');
+          return; // Don't continue if events fail
         }
 
         // Fetch weekly forecast
         const forecastResponse = await apiService.getWeeklyForecast();
         if (forecastResponse.success && forecastResponse.data) {
           setWeeklyForecast(forecastResponse.data);
+        } else {
+          setError(forecastResponse.error || 'Failed to fetch weekly forecast');
         }
       } catch (err) {
         setError('Failed to fetch calendar data');
@@ -74,6 +77,7 @@ export default function CalendarPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-textSoft">Loading calendar data...</p>
+          <p className="text-textSoft text-sm mt-2">🤖 AI is generating cosmic events and forecasts</p>
         </div>
       </div>
     );
@@ -82,8 +86,20 @@ export default function CalendarPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-charcoal text-textMain flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="text-6xl mb-4">🔑</div>
+          <h2 className="text-2xl font-heading font-bold text-primary mb-4">
+            API Key Required
+          </h2>
           <p className="text-red-400 mb-4">{error}</p>
+          <div className="bg-hover rounded-lg p-4 mb-4 text-left">
+            <p className="text-textSoft text-sm mb-2">To fix this:</p>
+            <ol className="text-textSoft text-sm list-decimal list-inside space-y-1">
+              <li>Get an OpenAI API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OpenAI Platform</a></li>
+              <li>Set environment variable: <code className="bg-charcoal px-2 py-1 rounded">OPENAI_API_KEY=your_key_here</code></li>
+              <li>Restart the server</li>
+            </ol>
+          </div>
           <button 
             onClick={() => window.location.reload()} 
             className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-2 px-4 rounded-lg transition-all duration-300"
@@ -109,6 +125,11 @@ export default function CalendarPage() {
           <p className="text-textSoft text-center mt-4 text-lg">
             Cosmic events and celestial insights
           </p>
+          <div className="text-center mt-2">
+            <span className="inline-block bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">
+              🤖 AI Generated (GPT-5)
+            </span>
+          </div>
         </div>
       </div>
 
