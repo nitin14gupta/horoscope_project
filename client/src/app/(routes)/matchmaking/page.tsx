@@ -127,7 +127,7 @@ export default function MatchmakingPage() {
                   >
                     <option value="">Select zodiac sign</option>
                     {zodiacSigns.map((sign) => (
-                      <option key={sign.id} value={sign.id}>
+                      <option key={sign.id} value={sign.name.toLowerCase()}>
                         {sign.symbol} {sign.name} ({sign.element})
                       </option>
                     ))}
@@ -145,7 +145,7 @@ export default function MatchmakingPage() {
                   >
                     <option value="">Select zodiac sign</option>
                     {zodiacSigns.map((sign) => (
-                      <option key={sign.id} value={sign.id}>
+                      <option key={sign.id} value={sign.name.toLowerCase()}>
                         {sign.symbol} {sign.name} ({sign.element})
                       </option>
                     ))}
@@ -190,19 +190,19 @@ export default function MatchmakingPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                     <div className="text-center">
                       <div className="text-4xl mb-2">
-                        {zodiacSigns.find(s => s.id === sign1)?.symbol} {zodiacSigns.find(s => s.id === sign1)?.name}
+                        {zodiacSigns.find(s => s.name.toLowerCase() === sign1)?.symbol} {zodiacSigns.find(s => s.name.toLowerCase() === sign1)?.name}
                       </div>
                       <p className="text-textSoft">
-                        {zodiacSigns.find(s => s.id === sign1)?.element} Element
+                        {zodiacSigns.find(s => s.name.toLowerCase() === sign1)?.element} Element
                       </p>
                     </div>
 
                     <div className="text-center">
                       <div className="text-4xl mb-2">
-                        {zodiacSigns.find(s => s.id === sign2)?.symbol} {zodiacSigns.find(s => s.id === sign2)?.name}
+                        {zodiacSigns.find(s => s.name.toLowerCase() === sign2)?.symbol} {zodiacSigns.find(s => s.name.toLowerCase() === sign2)?.name}
                       </div>
                       <p className="text-textSoft">
-                        {zodiacSigns.find(s => s.id === sign2)?.element} Element
+                        {zodiacSigns.find(s => s.name.toLowerCase() === sign2)?.element} Element
                       </p>
                     </div>
                   </div>

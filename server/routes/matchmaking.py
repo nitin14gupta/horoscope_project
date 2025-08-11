@@ -1,5 +1,9 @@
 from flask import Blueprint, request, jsonify
 import random
+import requests
+import json
+from typing import Optional, Dict, Any
+from config import Config
 
 matchmaking_bp = Blueprint('matchmaking', __name__)
 
@@ -77,6 +81,94 @@ COMPATIBILITY_MESSAGES = {
     ]
 }
 
+def get_ai_matchmaking(zodiac_sign1: str, zodiac_sign2: str) -> Optional[Dict[str, Any]]:
+    """Generate matchmaking compatibility using GPT-5"""
+    try:
+        if not Config.has_api_key('openai'):
+            return None
+
+        sign1 = zodiac_sign1.capitalize()
+        sign2 = zodiac_sign2.capitalize()
+
+        prompt = f"""
+        You are an expert Vedic astrologer. Assess kundali (zodiac) compatibility between {sign1} and {sign2}.
+
+        Return ONLY a JSON object with this exact schema:
+        {{
+          "compatibility": 0-100 integer overall score,
+          "message": "one-paragraph high-level summary",
+          "loveCompatibility": "short paragraph focusing on romantic compatibility",
+          "friendshipCompatibility": "short paragraph focusing on friendship dynamics",
+          "businessCompatibility": "short paragraph focusing on professional synergy",
+          "tips": ["5 concise, practical tips to improve the relationship"]
+        }}
+
+        Keep content encouraging, specific to {sign1}–{sign2} traits, and based on astrological principles. Do not include any text before or after the JSON.
+        """
+
+        headers = {
+            'Authorization': f'Bearer {Config.get_api_key("openai")}',
+            'Content-Type': 'application/json'
+        }
+
+        data = {
+            'model': 'gpt-5',
+            'messages': [
+                {
+                    'role': 'system',
+                    'content': 'You are an expert astrologer. Always respond with valid JSON only.'
+                },
+                {
+                    'role': 'user',
+                    'content': prompt
+                }
+            ],
+            'max_tokens': 700,
+            'temperature': 0.7
+        }
+
+        response = requests.post(Config.get_api_endpoint('openai_api'), headers=headers, json=data, timeout=15)
+        if response.status_code != 200:
+            return None
+
+        result = response.json()
+        content = result['choices'][0]['message']['content'].strip()
+
+        # Strip code fences if present
+        if content.startswith('```json'):
+            content = content[7:]
+        if content.endswith('```'):
+            content = content[:-3]
+        content = content.strip()
+
+        ai_data = json.loads(content)
+
+        # Normalize and validate fields
+        compatibility_raw = ai_data.get('compatibility', 0)
+        try:
+            compatibility_score = int(compatibility_raw)
+        except Exception:
+            compatibility_score = 0
+        compatibility_score = max(0, min(100, compatibility_score))
+
+        tips = ai_data.get('tips', [])
+        if isinstance(tips, str):
+            tips = [tips]
+        if not isinstance(tips, list):
+            tips = []
+        tips = [str(t).strip() for t in tips][:5]
+
+        return {
+            'compatibility': compatibility_score,
+            'message': ai_data.get('message', ''),
+            'loveCompatibility': ai_data.get('loveCompatibility', ''),
+            'friendshipCompatibility': ai_data.get('friendshipCompatibility', ''),
+            'businessCompatibility': ai_data.get('businessCompatibility', ''),
+            'tips': tips
+        }
+    except Exception:
+        return None
+
 @matchmaking_bp.route('/matchmaking', methods=['POST'])
 def get_compatibility():
     """Get compatibility between two zodiac signs"""
@@ -102,61 +194,66 @@ def get_compatibility():
                 'error': 'Invalid zodiac sign'
             }), 400
         
-        # Get compatibility score
-        compatibility_score = COMPATIBILITY_MATRIX[zodiac_sign1][zodiac_sign2]
-        
-        # Determine compatibility level
-        if compatibility_score >= 80:
-            compatibility_level = 'high'
-            message = random.choice(COMPATIBILITY_MESSAGES['high'])
-        elif compatibility_score >= 60:
-            compatibility_level = 'medium'
-            message = random.choice(COMPATIBILITY_MESSAGES['medium'])
+        # Try AI-generated matchmaking first
+        ai_result = get_ai_matchmaking(zodiac_sign1, zodiac_sign2)
+        if ai_result:
+            response = ai_result
         else:
-            compatibility_level = 'low'
-            message = random.choice(COMPATIBILITY_MESSAGES['low'])
-        
-        # Generate detailed compatibility
-        love_compatibility = f"{zodiac_sign1.capitalize()} and {zodiac_sign2.capitalize()} have a {compatibility_score}% love compatibility. {message}"
-        
-        friendship_compatibility = f"As friends, {zodiac_sign1.capitalize()} and {zodiac_sign2.capitalize()} can build a {compatibility_level} level of trust and understanding."
-        
-        business_compatibility = f"In business partnerships, {zodiac_sign1.capitalize()} and {zodiac_sign2.capitalize()} can achieve {compatibility_level} success through collaboration."
-        
-        # Generate tips based on compatibility level
-        if compatibility_level == 'high':
-            tips = [
-                "Communicate openly and honestly",
-                "Support each other's goals and dreams",
-                "Celebrate your differences and similarities",
-                "Maintain trust and loyalty",
-                "Continue to grow together"
-            ]
-        elif compatibility_level == 'medium':
-            tips = [
-                "Focus on effective communication",
-                "Be patient with each other's differences",
-                "Find common ground and shared interests",
-                "Practice active listening",
-                "Work on building trust gradually"
-            ]
-        else:
-            tips = [
-                "Practice patience and understanding",
-                "Focus on open and honest communication",
-                "Respect each other's boundaries",
-                "Seek professional guidance if needed",
-                "Remember that challenges can lead to growth"
-            ]
-        
-        response = {
-            'compatibility': compatibility_score,
-            'message': message,
-            'loveCompatibility': love_compatibility,
-            'friendshipCompatibility': friendship_compatibility,
-            'businessCompatibility': business_compatibility,
-            'tips': tips
-        }
+            # Fallback: matrix-based calculation
+            compatibility_score = COMPATIBILITY_MATRIX[zodiac_sign1][zodiac_sign2]
+
+            # Determine compatibility level
+            if compatibility_score >= 80:
+                compatibility_level = 'high'
+                message = random.choice(COMPATIBILITY_MESSAGES['high'])
+            elif compatibility_score >= 60:
+                compatibility_level = 'medium'
+                message = random.choice(COMPATIBILITY_MESSAGES['medium'])
+            else:
+                compatibility_level = 'low'
+                message = random.choice(COMPATIBILITY_MESSAGES['low'])
+
+            # Generate detailed compatibility
+            love_compatibility = f"{zodiac_sign1.capitalize()} and {zodiac_sign2.capitalize()} have a {compatibility_score}% love compatibility. {message}"
+
+            friendship_compatibility = f"As friends, {zodiac_sign1.capitalize()} and {zodiac_sign2.capitalize()} can build a {compatibility_level} level of trust and understanding."
+
+            business_compatibility = f"In business partnerships, {zodiac_sign1.capitalize()} and {zodiac_sign2.capitalize()} can achieve {compatibility_level} success through collaboration."
+
+            # Generate tips based on compatibility level
+            if compatibility_level == 'high':
+                tips = [
+                    "Communicate openly and honestly",
+                    "Support each other's goals and dreams",
+                    "Celebrate your differences and similarities",
+                    "Maintain trust and loyalty",
+                    "Continue to grow together"
+                ]
+            elif compatibility_level == 'medium':
+                tips = [
+                    "Focus on effective communication",
+                    "Be patient with each other's differences",
+                    "Find common ground and shared interests",
+                    "Practice active listening",
+                    "Work on building trust gradually"
+                ]
+            else:
+                tips = [
+                    "Practice patience and understanding",
+                    "Focus on open and honest communication",
+                    "Respect each other's boundaries",
+                    "Seek professional guidance if needed",
+                    "Remember that challenges can lead to growth"
+                ]
+
+            response = {
+                'compatibility': compatibility_score,
+                'message': message,
+                'loveCompatibility': love_compatibility,
+                'friendshipCompatibility': friendship_compatibility,
+                'businessCompatibility': business_compatibility,
+                'tips': tips
+            }
         
         return jsonify({
             'success': True,

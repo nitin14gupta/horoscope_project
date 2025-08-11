@@ -84,6 +84,33 @@ export default function HoroscopePage() {
     }
   };
 
+  const handleAIGeneration = async () => {
+    if (!formData.zodiacSign) {
+      setError('Please select a zodiac sign first.');
+      return;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    setShowResult(false);
+    
+    try {
+      const response = await apiService.getAIHoroscope(formData.zodiacSign);
+      
+      if (response.success && response.data) {
+        setHoroscopeData(response.data);
+        setShowResult(true);
+      } else {
+        setError(response.error || 'Failed to generate AI horoscope. Please try again.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred while generating AI horoscope. Please try again.');
+      console.error('AI Horoscope error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-charcoal text-textMain">
       {/* Header */}
@@ -201,20 +228,17 @@ export default function HoroscopePage() {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-primary hover:bg-primary/80 text-charcoal font-bold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? (
-                    <span className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-charcoal mr-2"></div>
-                      Reading the stars...
-                    </span>
-                  ) : (
-                    '🔭 Get My Horoscope'
-                  )}
-                </button>
+                <div className="space-y-3">
+                
+                  <button
+                    type="button"
+                    onClick={handleAIGeneration}
+                    disabled={isLoading}
+                    className="w-full bg-secondary hover:bg-secondary/80 text-charcoal font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed border border-secondary/30"
+                  >
+                    🤖 Generate AI Horoscope
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -229,6 +253,13 @@ export default function HoroscopePage() {
                 <p className="text-textSoft">
                   {horoscopeData?.fullName} • {horoscopeData?.zodiacSign ? horoscopeData.zodiacSign.charAt(0).toUpperCase() + horoscopeData.zodiacSign.slice(1) : ''}
                 </p>
+                {horoscopeData?.dataSource && (
+                  <div className="mt-2">
+                    <span className="inline-block bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">
+                      📡 {horoscopeData.dataSource}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {horoscopeData && (
@@ -250,6 +281,31 @@ export default function HoroscopePage() {
                     <div className="bg-charcoal rounded-lg p-4 border border-secondary/20">
                       <h4 className="text-secondary font-semibold mb-2">🔢 Lucky Number</h4>
                       <p className="text-textMain">{horoscopeData.luckyNumber}</p>
+                    </div>
+                  </div>
+
+                  {/* Astrological Details */}
+                  <div className="bg-charcoal rounded-lg p-6 border border-secondary/20">
+                    <h3 className="text-lg font-semibold text-secondary mb-4">🔮 Astrological Profile</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {horoscopeData.planetaryInfluence && (
+                        <div className="text-center">
+                          <h4 className="text-secondary font-semibold mb-2">🪐 Ruling Planet</h4>
+                          <p className="text-textMain">{horoscopeData.planetaryInfluence}</p>
+                        </div>
+                      )}
+                      {horoscopeData.element && (
+                        <div className="text-center">
+                          <h4 className="text-secondary font-semibold mb-2">🌊 Element</h4>
+                          <p className="text-textMain">{horoscopeData.element}</p>
+                        </div>
+                      )}
+                      {horoscopeData.quality && (
+                        <div className="text-center">
+                          <h4 className="text-secondary font-semibold mb-2">⚡ Quality</h4>
+                          <p className="text-textMain">{horoscopeData.quality}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -278,6 +334,27 @@ export default function HoroscopePage() {
                     <h4 className="text-secondary font-semibold mb-2">💫 Compatibility</h4>
                     <p className="text-textSoft text-sm">{horoscopeData.compatibility}</p>
                   </div>
+
+                  {/* Planetary Positions */}
+                  {horoscopeData.planetaryPositions && (
+                    <div className="bg-charcoal rounded-lg p-4 border border-primary/20">
+                      <h4 className="text-primary font-semibold mb-2">🌌 Planetary Positions</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div>
+                          <h5 className="text-textSoft text-sm mb-1">☀️ Sun</h5>
+                          <p className="text-textMain">{Math.round(horoscopeData.planetaryPositions.sun)}°</p>
+                        </div>
+                        <div>
+                          <h5 className="text-textSoft text-sm mb-1">🌙 Moon</h5>
+                          <p className="text-textMain">{Math.round(horoscopeData.planetaryPositions.moon)}°</p>
+                        </div>
+                        <div>
+                          <h5 className="text-textSoft text-sm mb-1">♂️ Mars</h5>
+                          <p className="text-textMain">{Math.round(horoscopeData.planetaryPositions.mars)}°</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -9,29 +9,48 @@ export default function PanchangPage() {
   const [panchangData, setPanchangData] = useState<PanchangData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+
+  // Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    return new Date().toISOString().split('T')[0];
+  };
+
+  const fetchPanchang = async (date?: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await apiService.getPanchang(date);
+      
+      if (response.success && response.data) {
+        setPanchangData(response.data);
+      } else {
+        setError(response.error || 'Failed to fetch panchang data');
+      }
+    } catch (err) {
+      setError('Failed to fetch panchang data');
+      console.error('Error fetching panchang data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPanchang = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await apiService.getPanchang();
-        
-        if (response.success && response.data) {
-          setPanchangData(response.data);
-        } else {
-          setError(response.error || 'Failed to fetch panchang data');
-        }
-      } catch (err) {
-        setError('Failed to fetch panchang data');
-        console.error('Error fetching panchang data:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchPanchang();
   }, []);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = e.target.value;
+    setSelectedDate(date);
+    if (date) {
+      fetchPanchang(date);
+    }
+  };
+
+  const handleTodayClick = () => {
+    setSelectedDate('');
+    fetchPanchang();
+  };
 
   if (isLoading) {
     return (
@@ -39,6 +58,7 @@ export default function PanchangPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-textSoft">Loading panchang data...</p>
+          <p className="text-textSoft text-sm mt-2">🤖 AI is generating authentic Hindu Panchang data</p>
         </div>
       </div>
     );
@@ -84,11 +104,50 @@ export default function PanchangPage() {
           <p className="text-textSoft text-center mt-4 text-lg">
             Hindu Calendar & Auspicious Timings
           </p>
+          <div className="text-center mt-4">
+            <div className="inline-block bg-secondary/20 text-secondary px-4 py-2 rounded-lg text-lg font-semibold">
+              📅 {panchangData?.date || getTodayDate()} • {panchangData?.dayName || new Date().toLocaleDateString('en-IN', { weekday: 'long' })}
+            </div>
+          </div>
+          {panchangData?.dataSource && (
+            <div className="text-center mt-2">
+              <span className="inline-block bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">
+                📡 {panchangData.dataSource}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
+          {/* Date Picker */}
+          <div className="bg-hover rounded-lg p-6 border border-secondary/20 mb-8">
+            <h3 className="text-xl font-heading font-bold text-center mb-4 text-secondary">
+              📅 Select Date for Panchang
+            </h3>
+            <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+              <div className="flex items-center gap-4">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  className="px-4 py-2 bg-charcoal border border-primary/30 rounded-lg focus:border-primary focus:outline-none text-textMain"
+                  max={getTodayDate()}
+                />
+                <button
+                  onClick={handleTodayClick}
+                  className="bg-primary hover:bg-primary/80 text-charcoal font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                >
+                  Today
+                </button>
+              </div>
+              <p className="text-textSoft text-sm text-center">
+                {selectedDate ? `Showing Panchang for ${selectedDate}` : `Showing Today's Panchang (${getTodayDate()})`}
+              </p>
+            </div>
+          </div>
+
           {/* Date and Basic Info */}
           <div className="bg-hover rounded-lg p-8 border border-primary/20 mb-8">
             <div className="text-center mb-8">
@@ -130,13 +189,13 @@ export default function PanchangPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-textSoft">Day:</span>
                   <span className="text-secondary font-semibold">
-                    {new Date(panchangData.date).toLocaleDateString('en-IN', { weekday: 'long' })}
+                    {panchangData.dayName || new Date(panchangData.date).toLocaleDateString('en-IN', { weekday: 'long' })}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-textSoft">Paksha:</span>
                   <span className="text-secondary font-semibold">
-                    {panchangData.tithi.includes('Shukla') ? 'Shukla Paksha' : 'Krishna Paksha'}
+                    {panchangData.paksha || (panchangData.tithi.includes('Shukla') ? 'Shukla Paksha' : 'Krishna Paksha')}
                   </span>
                 </div>
               </div>
@@ -175,6 +234,37 @@ export default function PanchangPage() {
                     </h4>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Significance Section */}
+          {(panchangData.tithiSignificance || panchangData.nakshatraSignificance) && (
+            <div className="bg-hover rounded-lg p-8 border border-primary/20 mb-8">
+              <h3 className="text-2xl font-heading font-bold text-center mb-6 text-primary">
+                🌟 Today's Significance
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {panchangData.tithiSignificance && (
+                  <div className="bg-charcoal rounded-lg p-6 border border-primary/20">
+                    <h4 className="text-lg font-heading font-bold text-primary mb-3">
+                      📅 {panchangData.tithi} Tithi
+                    </h4>
+                    <p className="text-textSoft leading-relaxed">
+                      {panchangData.tithiSignificance}
+                    </p>
+                  </div>
+                )}
+                {panchangData.nakshatraSignificance && (
+                  <div className="bg-charcoal rounded-lg p-6 border border-secondary/20">
+                    <h4 className="text-lg font-heading font-bold text-secondary mb-3">
+                      ⭐ {panchangData.nakshatra} Nakshatra
+                    </h4>
+                    <p className="text-textSoft leading-relaxed">
+                      {panchangData.nakshatraSignificance}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}

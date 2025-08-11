@@ -46,6 +46,15 @@ export interface HoroscopeResponse {
   career: string;
   love: string;
   finance: string;
+  planetaryInfluence?: string;
+  element?: string;
+  quality?: string;
+  planetaryPositions?: {
+    sun: number;
+    moon: number;
+    mars: number;
+  };
+  dataSource?: string;
   createdAt: string;
 }
 
@@ -75,6 +84,11 @@ export interface PanchangData {
   auspiciousTimings: string[];
   inauspiciousTimings: string[];
   dailyWisdom: string;
+  paksha?: string;
+  dayName?: string;
+  tithiSignificance?: string;
+  nakshatraSignificance?: string;
+  dataSource?: string;
 }
 
 // Matchmaking Types

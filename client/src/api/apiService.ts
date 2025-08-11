@@ -72,6 +72,15 @@ class ApiService {
     });
   }
 
+  // AI Horoscope API
+  async getAIHoroscope(zodiacSign: string, prompt?: string): Promise<ApiResponse<HoroscopeResponse>> {
+    const request = { zodiacSign, prompt };
+    return this.makeRequest<HoroscopeResponse>(`${API_CONFIG.ENDPOINTS.HOROSCOPE}/ai`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+  }
+
   // Zodiac API
   async getZodiacSigns(): Promise<ApiResponse<ZodiacSign[]>> {
     return this.makeRequest<ZodiacSign[]>(API_CONFIG.ENDPOINTS.ZODIAC);
