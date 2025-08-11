@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://horoscope-project.onrender.com',
   ENDPOINTS: {
     HOROSCOPE: '/api/horoscope',
     ZODIAC: '/api/zodiac',

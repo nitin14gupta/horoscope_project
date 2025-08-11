@@ -242,7 +242,7 @@ export default function PanchangPage() {
           {(panchangData.tithiSignificance || panchangData.nakshatraSignificance) && (
             <div className="bg-hover rounded-lg p-8 border border-primary/20 mb-8">
               <h3 className="text-2xl font-heading font-bold text-center mb-6 text-primary">
-                🌟 Today's Significance
+                🌟 Today&apos;s Significance
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {panchangData.tithiSignificance && (
