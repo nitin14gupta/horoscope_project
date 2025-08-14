@@ -173,7 +173,6 @@ export default function TarotPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
                 whileHover={{ scale: 1.02, rotateY: -2 }}
-                transition={{ type: "spring", stiffness: 100 }}
               >
                 <h3 className="text-xl font-heading font-bold mb-4 text-secondary">
                   💡 Tarot Reading Tips
