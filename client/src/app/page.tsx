@@ -35,7 +35,7 @@ export default function Home() {
             Unlock the Secrets of Your Stars 🌌
           </h1>
           <p className="text-xl md:text-2xl text-textSoft mb-8 leading-relaxed">
-            Personalized Horoscope Based on Hindu Calendar & Zodiac Signs
+            Personalized Horoscope Based on Zodiac Signs & Astrology
           </p>
           <p className="text-lg text-muted mb-12">
             Get your daily predictions, career insights, love compatibility & more.
@@ -73,9 +73,9 @@ export default function Home() {
                 description: 'Get personalized daily predictions based on your zodiac sign and birth details.'
               },
               {
-                icon: '🧘',
-                title: 'Hindu Panchang',
-                description: 'Access traditional Hindu calendar with auspicious timings and planetary positions.'
+                icon: '📅',
+                title: 'Astrological Calendar',
+                description: 'Access cosmic events, planetary movements, and auspicious timings.'
               },
               {
                 icon: '❤️',
@@ -83,19 +83,19 @@ export default function Home() {
                 description: 'Discover your compatibility with partners based on zodiac and birth charts.'
               },
               {
-                icon: '📅',
+                icon: '💼',
                 title: 'Career Forecast',
                 description: 'Get insights into your professional life and upcoming opportunities.'
               },
               {
-                icon: '🌞',
-                title: 'Zodiac Facts',
-                description: 'Learn about your zodiac sign characteristics, strengths, and weaknesses.'
+                icon: '♈',
+                title: 'Zodiac Insights',
+                description: 'Learn about your zodiac sign characteristics, strengths, and traits.'
               },
               {
-                icon: '📜',
-                title: 'Vedic Wisdom',
-                description: 'Ancient Vedic astrology principles for modern life guidance.'
+                icon: '🌟',
+                title: 'Birth Chart Analysis',
+                description: 'Deep dive into your astrological blueprint and planetary positions.'
               }
             ].map((feature, index) => (
               <div
@@ -124,9 +124,9 @@ export default function Home() {
               What is Horoscope?
             </h2>
             <p className="text-lg text-textSoft leading-relaxed mb-8">
-              Our platform is powered by ancient Vedic astrology principles derived from Hindu Panchang. 
+              Our platform is powered by ancient astrological principles and modern AI technology. 
               Based on your date, time, and place of birth, we generate detailed zodiac-based predictions 
-              that help you navigate life&apos;s journey with cosmic wisdom.
+              that help you navigate life&apos;s journey with cosmic wisdom and guidance.
             </p>
             <p className="text-lg text-textSoft leading-relaxed">
               The stars have guided humanity for millennia. Now, let them guide you through the 
@@ -140,18 +140,19 @@ export default function Home() {
       <section className="py-20 px-4">
         <div className="container mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-heading font-bold mb-12 text-secondary">
-            Connect & Explore 🧘
+            Connect & Explore 🌟
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {[
               { href: '/horoscope', text: 'Get My Horoscope', icon: '🔭' },
               { href: '/zodiac', text: 'Know My Zodiac', icon: '♈' },
-              { href: '/matchmaking', text: 'Kundali Match', icon: '💑' },
+              { href: '/matchmaking', text: 'Love Compatibility', icon: '💑' },
               { href: '/learn', text: 'Learn Astrology', icon: '📖' },
-              { href: '/about', text: 'About Us', icon: '' },
+              { href: '/about', text: 'About Us', icon: 'ℹ️' },
               { href: '/tarot', text: 'Tarot Reading', icon: '🎴' },
               { href: '/birth-chart', text: 'Birth Chart', icon: '🌟' },
+              { href: '/mantras', text: 'Daily Mantras', icon: '🧘' },
             ].map((link, index) => (
               <Link
                 key={index}
@@ -170,10 +171,10 @@ export default function Home() {
       <footer className="py-12 px-4 bg-hover border-t border-primary/20">
         <div className="container mx-auto text-center">
           <h3 className="text-2xl font-heading font-bold mb-4 text-secondary">
-            HoroScope 🔮
+            AstroScope 🔮
           </h3>
           <p className="text-textSoft mb-6">
-            Your gateway to cosmic wisdom and spiritual guidance
+            Your gateway to cosmic wisdom and astrological guidance
           </p>
           <div className="flex justify-center gap-6 text-textSoft">
             <Link href="/privacy" className="hover:text-primary transition-colors">
