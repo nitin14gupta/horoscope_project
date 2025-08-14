@@ -147,15 +147,11 @@ export default function Home() {
             {[
               { href: '/horoscope', text: 'Get My Horoscope', icon: '🔭' },
               { href: '/zodiac', text: 'Know My Zodiac', icon: '♈' },
-              { href: '/panchang', text: "Today's Panchang", icon: '🗓️' },
               { href: '/matchmaking', text: 'Kundali Match', icon: '💑' },
-              { href: '/mantras', text: 'Daily Mantras', icon: '🕉️' },
-              { href: '/remedies', text: 'Gemstones & Remedies', icon: '💎' },
               { href: '/learn', text: 'Learn Astrology', icon: '📖' },
-              { href: '/about', text: 'About Us', icon: '🕉️' },
+              { href: '/about', text: 'About Us', icon: '' },
               { href: '/tarot', text: 'Tarot Reading', icon: '🎴' },
               { href: '/birth-chart', text: 'Birth Chart', icon: '🌟' },
-              { href: '/calendar', text: 'Astrology Calendar', icon: '📅' }
             ].map((link, index) => (
               <Link
                 key={index}

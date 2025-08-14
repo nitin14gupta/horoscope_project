@@ -12,7 +12,7 @@ def ai_generate_calendar_events(month: Optional[int] = None, year: Optional[int]
     """Generate calendar events using Gemini"""
     try:
         api_key = Config.get_api_key('gemini')
-        if not api_key or api_key == 'AIzaSyBnw7JNFWCVawy0Ay7WcUjrIun3gd_KJWY':
+        if not api_key:
             print("No valid Gemini API key found for calendar events")
             return None
 
@@ -102,7 +102,7 @@ def ai_generate_weekly_forecast(week_start: Optional[str] = None) -> Optional[Di
     """Generate weekly forecast using Gemini"""
     try:
         api_key = Config.get_api_key('gemini')
-        if not api_key or api_key == 'AIzaSyBnw7JNFWCVawy0Ay7WcUjrIun3gd_KJWY':
+        if not api_key:
             print("No valid Gemini API key found for weekly forecast")
             return None
 
