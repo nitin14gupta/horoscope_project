@@ -20,50 +20,52 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: {
-    default: "HoroScope",
-    template: "%s | Horoscope",
+    default: "AstroScope",
+    template: "%s | AstroScope",
   },
-  description: "Horoscope is a website that provides daily horoscope for each zodiac sign.",
+  description: "AstroScope is a modern astrology platform that provides personalized horoscopes, birth charts, and cosmic insights for each zodiac sign.",
   keywords: [
+    "astrology",
     "horoscope",
     "daily horoscope",
     "zodiac sign",
-    "astrology",
-    "horoscope app",
+    "birth chart",
+    "astrology app",
+    "cosmic insights",
   ],
-  authors: [{ name: "HoroScope" }],
+  authors: [{ name: "AstroScope" }],
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
   },
   alternates: {
-    canonical: "https://horoscope.com/",
+    canonical: "https://astroscope.com/",
   },
   icons: {
     icon: '/favicon.ico',
   },
   openGraph: {
     type: "website",
-    url: "https://horoscope.com/",
-    title: "HoroScope – Daily Horoscope for each zodiac sign",
-    description: "HoroScope is a website that provides daily horoscope for each zodiac sign.",
+    url: "https://astroscope.com/",
+    title: "AstroScope – Modern Astrology & Cosmic Insights",
+    description: "AstroScope is a modern astrology platform that provides personalized horoscopes, birth charts, and cosmic insights for each zodiac sign.",
     images: [
       {
-        url: "https://horoscope.com/logo.jpeg",
+        url: "https://astroscope.com/logo.jpeg",
         width: 1200,
         height: 630,
-        alt: "HoroScope app screenshot",
+        alt: "AstroScope app screenshot",
       },
     ],
-    siteName: "HoroScope",
+    siteName: "AstroScope",
   },
   twitter: {
     card: "summary_large_image",
-    title: "HoroScope – Daily Horoscope for each zodiac sign",
-    description: "Discover HoroScope: Daily Horoscope for each zodiac sign.",
-    site: "@horoscopeapp",
-    images: ["https://horoscope.com/logo.jpeg"],
+    title: "AstroScope – Modern Astrology & Cosmic Insights",
+    description: "Discover AstroScope: Modern astrology platform with personalized horoscopes and cosmic insights.",
+    site: "@astroscopeapp",
+    images: ["https://astroscope.com/logo.jpeg"],
   },
   manifest: "/manifest.json",
 };
@@ -86,14 +88,14 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "HoroScope",
-              url: "https://horoscope.com",
-              logo: "https://horoscope.com/logo.png",
+              name: "AstroScope",
+              url: "https://astroscope.com",
+              logo: "https://astroscope.com/logo.png",
               sameAs: [
-                "https://instagram.com/jilzoofficial",
-                "https://twitter.com/jilzoapp",
+                "https://instagram.com/astroscopeofficial",
+                "https://twitter.com/astroscopeapp",
               ],
-              description: "HoroScope is a website that provides daily horoscope for each zodiac sign.",
+              description: "AstroScope is a modern astrology platform that provides personalized horoscopes, birth charts, and cosmic insights for each zodiac sign.",
               foundingDate: "2025",
               founder: {
                 "@type": "Person",
@@ -122,10 +124,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              url: "https://horoscope.com",
+              url: "https://astroscope.com",
               potentialAction: {
                 "@type": "SearchAction",
-                target: "https://horoscope.com/?q={search_term_string}",
+                target: "https://astroscope.com/?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             }),
@@ -139,13 +141,13 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebPage",
-              name: "HoroScope – Daily Horoscope for each zodiac sign",
-              url: "https://horoscope.com",
-              description: "HoroScope is a website that provides daily horoscope for each zodiac sign.",
+              name: "AstroScope – Modern Astrology & Cosmic Insights",
+              url: "https://astroscope.com",
+              description: "AstroScope is a modern astrology platform that provides personalized horoscopes, birth charts, and cosmic insights for each zodiac sign.",
               inLanguage: "en-IN",
               isPartOf: {
                 "@type": "WebSite",
-                url: "https://horoscope.com",
+                url: "https://astroscope.com",
               },
             }),
           }}

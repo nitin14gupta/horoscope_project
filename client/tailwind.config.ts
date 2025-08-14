@@ -48,6 +48,44 @@ export default {
         'mystical-gradient': 'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
         'purple-glow': 'radial-gradient(circle at 50% 50%, rgba(187, 134, 252, 0.15), transparent 70%)',
         'golden-glow': 'radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.15), transparent 70%)',
+        'cosmic-gradient': 'linear-gradient(45deg, #667eea 0%, #764ba2 100%)',
+        'nebula-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+      },
+
+      /**
+       * 3D Transform utilities
+       */
+      transformStyle: {
+        'preserve-3d': 'preserve-3d',
+      },
+
+      /**
+       * Perspective utilities
+       */
+      perspective: {
+        '1000': '1000px',
+        '2000': '2000px',
+        '3000': '3000px',
+      },
+
+      /**
+       * Backdrop blur utilities
+       */
+      backdropBlur: {
+        'xs': '2px',
+      },
+
+      /**
+       * Animation utilities
+       */
+      animation: {
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'mystical-flicker': 'mystical-flicker 3s linear infinite',
+        'golden-flicker': 'golden-flicker 2s linear infinite',
+        'spin-slow': 'spin-slow 20s linear infinite',
+        'blob': 'blob 14s ease-in-out infinite',
+        'heart-burst': 'heart-burst 0.8s ease-out forwards',
       },
     },
   },
