@@ -76,7 +76,7 @@ def normalize_category(category: Optional[str]) -> Optional[str]:
 
 def ai_generate_remedies(category: Optional[str]) -> Optional[List[Dict[str, Any]]]:
     try:
-        if not Config.has_api_key('openai'):
+        if not Config.has_api_key('gemini'):
             return None
 
         focus = ''
@@ -105,29 +105,25 @@ def ai_generate_remedies(category: Optional[str]) -> Optional[List[Dict[str, Any
         """
 
         headers = {
-            'Authorization': f'Bearer {Config.get_api_key("openai")}',
+            'X-goog-api-key': Config.get_api_key("gemini"),
             'Content-Type': 'application/json'
         }
         data = {
-            'model': 'gpt-5',
-            'messages': [
+            'contents': [
                 {
-                    'role': 'system',
-                    'content': 'You are an expert astrologer. Always respond with valid JSON only.'
-                },
-                {
-                    'role': 'user',
-                    'content': prompt
+                    'parts': [
+                        {
+                            'text': prompt
+                        }
+                    ]
                 }
-            ],
-            'max_tokens': 1200,
-            'temperature': 0.7
+            ]
         }
-        resp = requests.post(Config.get_api_endpoint('openai_api'), headers=headers, json=data, timeout=15)
+        resp = requests.post(Config.get_api_endpoint('gemini_api'), headers=headers, json=data, timeout=15)
         if resp.status_code != 200:
             return None
         result = resp.json()
-        content = result['choices'][0]['message']['content'].strip()
+        content = result['candidates'][0]['content']['parts'][0]['text'].strip()
         if content.startswith('```json'):
             content = content[7:]
         if content.endswith('```'):

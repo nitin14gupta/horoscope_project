@@ -95,8 +95,8 @@ export default function CalendarPage() {
           <div className="bg-hover rounded-lg p-4 mb-4 text-left">
             <p className="text-textSoft text-sm mb-2">To fix this:</p>
             <ol className="text-textSoft text-sm list-decimal list-inside space-y-1">
-              <li>Get an OpenAI API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OpenAI Platform</a></li>
-              <li>Set environment variable: <code className="bg-charcoal px-2 py-1 rounded">OPENAI_API_KEY=your_key_here</code></li>
+              <li>Get a Gemini API key from <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google AI Studio</a></li>
+              <li>Set environment variable: <code className="bg-charcoal px-2 py-1 rounded">GEMINI_API_KEY=your_key_here</code></li>
               <li>Restart the server</li>
             </ol>
           </div>
@@ -127,7 +127,7 @@ export default function CalendarPage() {
           </p>
           <div className="text-center mt-2">
             <span className="inline-block bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">
-              🤖 AI Generated (GPT-5)
+              🤖 AI Generated (Gemini)
             </span>
           </div>
         </div>

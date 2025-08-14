@@ -28,7 +28,7 @@ SIGN_ELEMENTS = {
 
 def ai_generate_birth_chart(payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     try:
-        if not Config.has_api_key('openai'):
+        if not Config.has_api_key('gemini'):
             return None
 
         name = payload.get('name')
@@ -68,23 +68,25 @@ def ai_generate_birth_chart(payload: Dict[str, Any]) -> Optional[Dict[str, Any]]
         """
 
         headers = {
-            'Authorization': f'Bearer {Config.get_api_key("openai")}',
+            'X-goog-api-key': Config.get_api_key("gemini"),
             'Content-Type': 'application/json'
         }
         data = {
-            'model': 'gpt-5',
-            'messages': [
-                {'role': 'system', 'content': 'You are an expert astrologer. Always respond with valid JSON only.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            'max_tokens': 1400,
-            'temperature': 0.6
+            'contents': [
+                {
+                    'parts': [
+                        {
+                            'text': prompt
+                        }
+                    ]
+                }
+            ]
         }
-        resp = requests.post(Config.get_api_endpoint('openai_api'), headers=headers, json=data, timeout=20)
+        resp = requests.post(Config.get_api_endpoint('gemini_api'), headers=headers, json=data, timeout=20)
         if resp.status_code != 200:
             return None
         result = resp.json()
-        content = result['choices'][0]['message']['content'].strip()
+        content = result['candidates'][0]['content']['parts'][0]['text'].strip()
         if content.startswith('```json'):
             content = content[7:]
         if content.endswith('```'):

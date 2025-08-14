@@ -5,17 +5,17 @@ class Config:
     """Configuration class for API keys and settings"""
     
     # API Keys for AI providers (must be set via environment)
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-proj-your-openai-api-key-here')
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyBnw7JNFWCVawy0Ay7WcUjrIun3gd_KJWY')
     
     # External API endpoints
     EXTERNAL_APIS = {
-        'openai_api': 'https://api.openai.com/v1/chat/completions',
+        'gemini_api': 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
     }
     
     # AI Model configurations
     AI_MODELS = {
-        'openai': {
-            'model': 'gpt-5',
+        'gemini': {
+            'model': 'gemini-2.0-flash',
             'max_tokens': 500,
             'temperature': 0.7
         },
@@ -29,7 +29,7 @@ class Config:
     def get_api_key(cls, service: str) -> str:
         """Get API key for a specific service"""
         key_map = {
-            'openai': cls.OPENAI_API_KEY,
+            'gemini': cls.GEMINI_API_KEY,
         }
         return key_map.get(service, '')
     

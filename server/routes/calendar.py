@@ -9,11 +9,11 @@ from config import Config
 calendar_bp = Blueprint('calendar', __name__)
 
 def ai_generate_calendar_events(month: Optional[int] = None, year: Optional[int] = None) -> Optional[List[Dict[str, Any]]]:
-    """Generate calendar events using GPT-5"""
+    """Generate calendar events using Gemini"""
     try:
-        api_key = Config.get_api_key('openai')
-        if not api_key or api_key == 'sk-proj-your-openai-api-key-here':
-            print("No valid OpenAI API key found for calendar events")
+        api_key = Config.get_api_key('gemini')
+        if not api_key or api_key == 'AIzaSyBnw7JNFWCVawy0Ay7WcUjrIun3gd_KJWY':
+            print("No valid Gemini API key found for calendar events")
             return None
 
         # Determine month and year
@@ -44,25 +44,27 @@ def ai_generate_calendar_events(month: Optional[int] = None, year: Optional[int]
         """
         
         headers = {
-            'Authorization': f'Bearer {Config.get_api_key("openai")}',
+            'X-goog-api-key': Config.get_api_key("gemini"),
             'Content-Type': 'application/json'
         }
         data = {
-            'model': 'gpt-5',
-            'messages': [
-                {'role': 'system', 'content': 'You are an expert astrologer. Always respond with valid JSON only.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            'max_tokens': 800,
-            'temperature': 0.7
+            'contents': [
+                {
+                    'parts': [
+                        {
+                            'text': prompt
+                        }
+                    ]
+                }
+            ]
         }
         
-        resp = requests.post(Config.get_api_endpoint('openai_api'), headers=headers, json=data, timeout=15)
+        resp = requests.post(Config.get_api_endpoint('gemini_api'), headers=headers, json=data, timeout=15)
         if resp.status_code != 200:
             return None
             
         result = resp.json()
-        content = result['choices'][0]['message']['content'].strip()
+        content = result['candidates'][0]['content']['parts'][0]['text'].strip()
         if content.startswith('```json'):
             content = content[7:]
         if content.endswith('```'):
@@ -97,11 +99,11 @@ def ai_generate_calendar_events(month: Optional[int] = None, year: Optional[int]
         return None
 
 def ai_generate_weekly_forecast(week_start: Optional[str] = None) -> Optional[Dict[str, Any]]:
-    """Generate weekly forecast using GPT-5"""
+    """Generate weekly forecast using Gemini"""
     try:
-        api_key = Config.get_api_key('openai')
-        if not api_key or api_key == 'sk-proj-your-openai-api-key-here':
-            print("No valid OpenAI API key found for weekly forecast")
+        api_key = Config.get_api_key('gemini')
+        if not api_key or api_key == 'AIzaSyBnw7JNFWCVawy0Ay7WcUjrIun3gd_KJWY':
+            print("No valid Gemini API key found for weekly forecast")
             return None
 
         if week_start:
@@ -128,25 +130,27 @@ def ai_generate_weekly_forecast(week_start: Optional[str] = None) -> Optional[Di
         """
         
         headers = {
-            'Authorization': f'Bearer {Config.get_api_key("openai")}',
+            'X-goog-api-key': Config.get_api_key("gemini"),
             'Content-Type': 'application/json'
         }
         data = {
-            'model': 'gpt-5',
-            'messages': [
-                {'role': 'system', 'content': 'You are an expert astrologer. Always respond with valid JSON only.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            'max_tokens': 600,
-            'temperature': 0.7
+            'contents': [
+                {
+                    'parts': [
+                        {
+                            'text': prompt
+                        }
+                    ]
+                }
+            ]
         }
         
-        resp = requests.post(Config.get_api_endpoint('openai_api'), headers=headers, json=data, timeout=15)
+        resp = requests.post(Config.get_api_endpoint('gemini_api'), headers=headers, json=data, timeout=15)
         if resp.status_code != 200:
             return None
             
         result = resp.json()
-        content = result['choices'][0]['message']['content'].strip()
+        content = result['candidates'][0]['content']['parts'][0]['text'].strip()
         if content.startswith('```json'):
             content = content[7:]
         if content.endswith('```'):
@@ -203,7 +207,7 @@ def get_calendar_events():
         # No AI data available - return error
         return jsonify({
             'success': False,
-            'error': 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable to get AI-generated calendar events.'
+            'error': 'Gemini API key not configured. Please set GEMINI_API_KEY environment variable to get AI-generated calendar events.'
         }), 500
         
     except Exception as e:
@@ -229,7 +233,7 @@ def get_weekly_forecast():
         # No AI data available - return error
         return jsonify({
             'success': False,
-            'error': 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable to get AI-generated weekly forecasts.'
+            'error': 'Gemini API key not configured. Please set GEMINI_API_KEY environment variable to get AI-generated weekly forecasts.'
         }), 500
         
     except Exception as e:

@@ -35,8 +35,7 @@ def test_requirements():
         'flask',
         'flask_cors', 
         'gunicorn',
-        'requests',
-        'openai'
+        'requests'
     ]
     
     missing = []
@@ -74,7 +73,7 @@ def main():
         print("\n🚀 Next steps:")
         print("1. Push code to GitHub")
         print("2. Connect to Render dashboard")
-        print("3. Set OPENAI_API_KEY environment variable")
+        print("3. Set GEMINI_API_KEY environment variable")
         print("4. Deploy!")
     else:
         print("❌ Some tests failed. Please fix issues before deploying.")

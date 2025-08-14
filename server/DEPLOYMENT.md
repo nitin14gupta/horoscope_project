@@ -22,7 +22,7 @@ Start Command: gunicorn wsgi:app --config gunicorn.conf.py
 
 ### 4. **Environment Variables**
 Set these in Render Dashboard → Environment:
-- `OPENAI_API_KEY`: Your OpenAI API key
+- `GEMINI_API_KEY`: Your Gemini API key
 - `PORT`: Auto-set by Render (don't change)
 
 ### 5. **Free Tier Settings**
@@ -67,7 +67,7 @@ After deployment, your API will be available at:
 
 1. **Build fails**: Check `requirements.txt` and Python version
 2. **Start fails**: Verify `wsgi.py` and Gunicorn config
-3. **API key issues**: Set `OPENAI_API_KEY` in environment variables
+3. **API key issues**: Set `GEMINI_API_KEY` in environment variables
 4. **CORS errors**: Frontend needs to use the new Render URL
 
 ## 📊 Monitoring

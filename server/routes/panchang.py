@@ -136,15 +136,17 @@ def get_inauspicious_timings(date_str):
     return [base_timings[i] for i in selected_indices]
 
 def get_ai_generated_panchang(date_obj):
-    """Generate panchang data using GPT-5"""
+    """Generate panchang data using Gemini"""
     try:
-        if not Config.has_api_key('openai'):
+        if not Config.has_api_key('gemini'):
             return None
             
         date_str = date_obj.strftime('%Y-%m-%d')
         day_name = date_obj.strftime('%A')
         
         prompt = f"""
+        You are an expert in Hindu astrology and Panchang calculations. Provide accurate, authentic Panchang data based on traditional Hindu calendar principles. Always respond with valid JSON only.
+        
         Generate authentic Hindu Panchang data for {date_str} ({day_name}). 
         
         Please provide a JSON response with the following structure:
@@ -170,25 +172,27 @@ def get_ai_generated_panchang(date_obj):
         """
         
         headers = {
-            'Authorization': f'Bearer {Config.get_api_key("openai")}',
+            'X-goog-api-key': Config.get_api_key("gemini"),
             'Content-Type': 'application/json'
         }
         
         data = {
-            'model': 'gpt-5',
-            'messages': [
-                {'role': 'system', 'content': 'You are an expert in Hindu astrology and Panchang calculations. Provide accurate, authentic Panchang data based on traditional Hindu calendar principles. Always respond with valid JSON only.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            'max_tokens': 1000,
-            'temperature': 0.7
+            'contents': [
+                {
+                    'parts': [
+                        {
+                            'text': prompt
+                        }
+                    ]
+                }
+            ]
         }
         
-        response = requests.post(Config.get_api_endpoint('openai_api'), headers=headers, json=data, timeout=15)
+        response = requests.post(Config.get_api_endpoint('gemini_api'), headers=headers, json=data, timeout=15)
         
         if response.status_code == 200:
             result = response.json()
-            content = result['choices'][0]['message']['content']
+            content = result['candidates'][0]['content']['parts'][0]['text']
             
             # Parse the JSON response from GPT
             try:
@@ -219,15 +223,15 @@ def get_ai_generated_panchang(date_obj):
                     'tithiSignificance': panchang_data.get('tithiSignificance', ''),
                     'nakshatraSignificance': panchang_data.get('nakshatraSignificance', ''),
                 }
-                result_obj['dataSource'] = 'AI Generated (GPT-5)'
+                result_obj['dataSource'] = 'AI Generated (Gemini)'
                 return result_obj
             except json.JSONDecodeError as e:
-                print(f"Error parsing GPT response: {e}")
+                print(f"Error parsing Gemini response: {e}")
                 print(f"Raw response: {content}")
                 return None
                 
     except Exception as e:
-        print(f"Error with OpenAI API: {e}")
+        print(f"Error with Gemini API: {e}")
     
     return None
 

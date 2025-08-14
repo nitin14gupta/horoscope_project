@@ -43,19 +43,21 @@ def get_real_horoscope_from_api(zodiac_sign: str, date: str = None) -> Optional[
     return None
 
 def get_ai_generated_horoscope(zodiac_sign: str, user_details: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Generate horoscope using AI models (OpenAI)"""
+    """Generate horoscope using AI models (Gemini)"""
     try:
-        if Config.has_api_key('openai'):
-            return get_openai_horoscope(zodiac_sign, user_details)
+        if Config.has_api_key('gemini'):
+            return get_gemini_horoscope(zodiac_sign, user_details)
     except Exception as e:
         print(f"Error generating AI horoscope: {e}")
     
     return None
 
-def get_openai_horoscope(zodiac_sign: str, user_details: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Generate horoscope using OpenAI GPT model"""
+def get_gemini_horoscope(zodiac_sign: str, user_details: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Generate horoscope using Gemini model"""
     try:
         prompt = f"""
+        You are an expert astrologer with deep knowledge of zodiac signs, planetary influences, and astrological principles. Provide accurate, personalized horoscope readings. Always respond with valid JSON only.
+        
         Generate a personalized daily horoscope for a {user_details.get('gender', 'person')} born on {user_details.get('dateOfBirth', '')} 
         with zodiac sign {zodiac_sign.capitalize()}. 
         
@@ -79,27 +81,29 @@ def get_openai_horoscope(zodiac_sign: str, user_details: Dict[str, Any]) -> Opti
         """
         
         headers = {
-            'Authorization': f'Bearer {Config.get_api_key("openai")}',
+            'X-goog-api-key': Config.get_api_key("gemini"),
             'Content-Type': 'application/json'
         }
         
         data = {
-            'model': 'gpt-5',
-            'messages': [
-                {'role': 'system', 'content': 'You are an expert astrologer with deep knowledge of zodiac signs, planetary influences, and astrological principles. Provide accurate, personalized horoscope readings. Always respond with valid JSON only.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            'max_tokens': 800,
-            'temperature': 0.7
+            'contents': [
+                {
+                    'parts': [
+                        {
+                            'text': prompt
+                        }
+                    ]
+                }
+            ]
         }
         
-        response = requests.post(Config.get_api_endpoint('openai_api'), headers=headers, json=data, timeout=15)
+        response = requests.post(Config.get_api_endpoint('gemini_api'), headers=headers, json=data, timeout=15)
         
         if response.status_code == 200:
             result = response.json()
-            content = result['choices'][0]['message']['content']
+            content = result['candidates'][0]['content']['parts'][0]['text']
             
-            # Parse the JSON response from GPT
+            # Parse the JSON response from Gemini
             try:
                 # Clean the response to extract JSON
                 content = content.strip()
@@ -124,15 +128,15 @@ def get_openai_horoscope(zodiac_sign: str, user_details: Dict[str, Any]) -> Opti
                     'planetaryInfluence': horoscope_data.get('planetaryInfluence', ''),
                     'element': horoscope_data.get('element', ''),
                     'quality': horoscope_data.get('quality', ''),
-                    'dataSource': 'AI Generated (GPT-5)'
+                    'dataSource': 'AI Generated (Gemini)'
                 }
             except json.JSONDecodeError as e:
-                print(f"Error parsing GPT response: {e}")
+                print(f"Error parsing Gemini response: {e}")
                 print(f"Raw response: {content}")
                 return None
                 
     except Exception as e:
-        print(f"Error with OpenAI API: {e}")
+        print(f"Error with Gemini API: {e}")
     
     return None
 
