@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -438,7 +438,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.6 }}
             viewport={{ once: true }}
           >
-            {['Privacy Policy', 'Terms of Service', 'Contact Us'].map((link, index) => (
+            {['Privacy Policy', 'Terms of Service', 'Contact Us'].map((link) => (
               <motion.div
                 key={link}
                 whileHover={{ scale: 1.1, color: "#BB86FC" }}
